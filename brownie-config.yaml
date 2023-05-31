@@ -1,0 +1,272 @@
+project_structure:
+    build: build
+    contracts: contracts
+    interfaces: interfaces
+    reports: reports
+    scripts: scripts
+    tests: tests
+
+dotenv: .env
+
+networks:
+    default: development
+    ETHERSCAN_TOKEN : = $process.env.ETHERSCAN_TOKEN
+    alpha_token : = $process.env.alpha_token
+    MOONSCAN_TOKEN : = $process.env.MOONSCAN_TOKEN
+
+    development:
+        gas_limit: max
+        gas_buffer: 1
+        gas_price: 0
+        max_fee: null
+        priority_fee: null
+        reverting_tx_gas_limit: max
+        default_contract_owner: true
+        cmd_settings: null
+
+    ropsten:
+        gas_limit: auto
+        gas_buffer: 1
+        gas_price: auto
+        max_fee: null
+        priority_fee: null
+        reverting_tx_gas_limit: false
+        default_contract_owner: false
+
+    kovan:
+        "host": "http://kovan.infura.io/v3/$process.env.WEB3_INFURA_PROJECT_ID"
+        gas_limit: auto
+        gas_buffer: 1
+        gas_price: auto
+        max_fee: null
+        priority_fee: null
+        reverting_tx_gas_limit: false
+        default_contract_owner: false
+        explorer: "https://api-kovan.etherscan.io/$ETHERSCAN_TOKEN"
+        variables:
+          chainlink:
+            vrfCoordinator: "0xdD3782915140c8f3b190B5D67eAc6dc5760C46E9"
+            linkToken: "0xa36085F69e2889c224210F603D836748e7dC0088"
+          tokens:
+            daiToken: "0x7B47f80572EB7291a8FD50FF287aC1F7fb4c5bBF"
+            zooToken: "0x913CC43d82C2975079731001Cfb46fb96681E908"
+          aragon:
+            owner: ""
+          treasury: ""
+          gasFeePool: ""
+          team: ""
+
+    rinkeby:
+        "host": "http://rinkeby.infura.io/v3/$process.env.WEB3_INFURA_PROJECT_ID"
+        gas_limit: auto
+        gas_buffer: 1
+        gas_price: auto
+        max_fee: null
+        priority_fee: null
+        reverting_tx_gas_limit: false
+        default_contract_owner: false
+        explorer: "https://api-rinkeby.etherscan.io/$ETHERSCAN_TOKEN"
+        variables:
+          chainlink:
+            vrfCoordinator: "0x6168499c0cFfCaCD319c818142124B7A15E857ab"
+            linkToken: "0x01BE23585060835E02B77ef475b0Cc51aA1e0709"
+          tokens:
+            daiToken: "0x916649518B5c4414Ab3cfF571eA56F7e7ab07A71"
+            zooToken: "0x5A830298d17F86632D60d76eC166ad3eC6a4350c"
+          aragon:
+            owner: ""
+          treasury: ""
+          gasFeePool: ""
+          team: ""
+
+    goerli:
+        "host": "http://goerli.infura.io/v3/$process.env.WEB3_INFURA_PROJECT_ID"
+        gas_limit: auto
+        gas_buffer: 1
+        gas_price: auto
+        max_fee: null
+        priority_fee: null
+        reverting_tx_gas_limit: false
+        default_contract_owner: false
+        explorer: "https://api-goerli.etherscan.io/$ETHERSCAN_TOKEN"
+        variables:
+          chainlink:
+            vrfCoordinator: "0x2ca8e0c643bde4c2e08ab1fa0da3401adad7734d"
+            linkToken: "0x326c977e6efc84e512bb9c30f76e30c160ed06fb"
+          tokens:
+            daiToken: "0xe411249B1496F6D65f08a6bC02BAA16c521281e1"
+            zooToken: "0xc9A5ae5E24a89FBB4FfB7ed6DD72e3c69e3120B2"
+          aragon:
+            owner: ""
+          treasury: ""
+          gasFeePool: ""
+          team: ""
+
+    ftm-test:
+        "host": "https://rpc.testnet.fantom.network"
+        gas_limit: auto
+        gas_buffer: 1
+        gas_price: auto
+        max_fee: null
+        priority_fee: null
+        reverting_tx_gas_limit: false
+        default_contract_owner: false
+        explorer: "https://explorer.testnet.fantom.network"
+        # explorer: "https://api-testnet.ftmscan.com/"
+        variables:
+          chainlink:
+            vrfCoordinator: "0xdD3782915140c8f3b190B5D67eAc6dc5760C46E9"
+            linkToken: "0xfaFedb041c0DD4fA2Dc0d87a6B0979Ee6FA7af5F"
+          tokens:
+            daiToken: "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa" # change for dai or frax fork
+            zooToken: "0x19455784cc60cE5096be40669Be991d550E4742A" # change for actual zoo fork
+          aragon:
+            owner: ""
+          treasury: ""
+          gasFeePool: ""
+          team: ""
+
+    alpha:
+        "host": "https://rpc.testnet.moonbeam.network/"
+        gas_limit: auto
+        gas_buffer: 1
+        gas_price: auto
+        max_fee: null
+        priority_fee: null
+        reverting_tx_gas_limit: false
+        default_contract_owner: false
+        explorer: "https://moonbase.moonscan.io/$MOONSCAN_TOKEN"
+        variables:
+          chainlink:
+            vrfCoordinator: "0x2ca8e0c643bde4c2e08ab1fa0da3401adad7734d"
+            linkToken: "0x326c977e6efc84e512bb9c30f76e30c160ed06fb"
+          tokens:
+            daiToken: "0x9D56679392E6f9CC6dF9fDfb7C18A617410A6C30"
+            zooToken: "0xf264bf1FB9f098748aF84Cf345d8ffAEA2Ae29b1"
+          aragon:
+            owner: ""
+          treasury: ""
+          gasFeePool: ""
+          team: ""
+
+    moonbase:
+        "host": "https://moonbeam-alpha.api.onfinality.io/public"
+        gas_limit: auto
+        gas_buffer: 1
+        gas_price: auto
+        max_fee: null
+        priority_fee: null
+        reverting_tx_gas_limit: false
+        default_contract_owner: false
+        explorer: "https://api-moonbase.moonscan.io/$MOONSCAN_TOKEN"
+        variables:
+          chainlink:
+            vrfCoordinator: "0x2ca8e0c643bde4c2e08ab1fa0da3401adad7734d"
+            linkToken: "0x326c977e6efc84e512bb9c30f76e30c160ed06fb"
+          tokens:
+            daiToken: "0x48C1Ccf6fE6A833b29B2135f3130Ab6aeeFC364f"
+            zooToken: "0x9F4507f0eB9CD9820aa69e67762814Bab7C15417"
+          aragon:
+            owner: ""
+          treasury: ""
+          gasFeePool: ""
+          team: ""
+
+    moonbeam-main:
+        "host": "https://moonbeam.api.onfinality.io/public"
+        gas_limit: auto
+        gas_buffer: 1
+        gas_price: auto
+        max_fee: null
+        priority_fee: null
+        reverting_tx_gas_limit: false
+        default_contract_owner: false
+        explorer: "https://api-moonbase.moonscan.io/$MOONSCAN_TOKEN"
+        variables:
+          chainlink:
+            vrfCoordinator: "0x2ca8e0c643bde4c2e08ab1fa0da3401adad7734d"
+            linkToken: "0x326c977e6efc84e512bb9c30f76e30c160ed06fb"
+          tokens:
+            daiToken: "0xF28c588E73360B81e0a8D18C4DF91e6Ed104B284"
+            zooToken: "0xf2921C91E92F5BFc76B54b9D1aa40B9787D7e156"
+          aragon:
+            owner: ""
+          treasury: ""
+          gasFeePool: ""
+          team: ""
+
+    ethereum/develop:
+        "host": "http://kovan.infura.io/v3/$process.env.WEB3_INFURA_PROJECT_ID"
+        gas_limit: auto
+        gas_buffer: 1
+        gas_price: auto
+        max_fee: null
+        priority_fee: null
+        reverting_tx_gas_limit: false
+        default_contract_owner: false
+        explorer: "https://api-kovan.etherscan.io/$ETHERSCAN_TOKEN"
+        variables:
+          chainlink:
+            vrfCoordinator: "0xdD3782915140c8f3b190B5D67eAc6dc5760C46E9"
+            linkToken: "0xa36085F69e2889c224210F603D836748e7dC0088"
+          tokens:
+            daiToken: "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa" # change for real dai
+            zooToken: "0x19455784cc60cE5096be40669Be991d550E4742A" # change for real zoo
+          aragon:
+            owner: ""
+          treasury: ""
+          gasFeePool: ""
+          team: ""
+
+    live:
+        gas_limit: auto
+        gas_buffer: 1.1
+        gas_price: auto
+        max_fee: null
+        priority_fee: null
+        reverting_tx_gas_limit: false
+        default_contract_owner: false
+
+compiler:
+  evm_version: null
+  solc:
+    version: null
+    optimizer:
+      enabled: true
+      runs: 200
+    remappings: 
+      - "@chainlink=smartcontractkit/chainlink@1.1.0"
+      - "@OpenZeppelin=OpenZeppelin/openzeppelin-contracts@4.8.0"
+  vyper:
+    version: null
+
+console:
+  show_colors: true
+  color_style: monokai
+  auto_suggest: true
+  completions: true
+  editing_mode: emacs
+
+reports:
+  exclude_paths: null
+  exclude_contracts: null
+  only_include_project: true
+
+hypothesis:
+  deadline: null
+  max_examples: 50
+  report_multiple_bugs: False
+  stateful_step_count: 10
+  phases:
+    explicit: true
+    reuse: true
+    generate: true
+    target: true
+    shrink: true
+
+autofetch_sources: false
+dependencies:
+ - OpenZeppelin/openzeppelin-contracts@4.8.0
+ - OpenZeppelin/openzeppelin-contracts@4.5.0
+ - "smartcontractkit/chainlink@2.1.0"
+dev_deployment_artifacts: falsebro
