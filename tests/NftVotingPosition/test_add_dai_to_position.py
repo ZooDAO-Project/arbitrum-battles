@@ -103,8 +103,13 @@ def test_works_in_stage_1_4_5(accounts, tokens, battles):
 	# Second approve and transfer of DAI
 	additionalDai = 20e18
 	daiToken.approve(voting, additionalDai, _from(accounts[2]))
-	voting.addDaiToPosition(1, additionalDai, _from(accounts[2]))
+	voting.addDaiToPosition(1, additionalDai, _from(accounts[2])) # 1 stage
 
+	assert arena.votingPositionsValues(1)[1] == 30000000000000000000
+	assert arena.pendingVotesEpoch(1) == 0
+	assert arena.pendingVotes(1) == 0
+	assert arena.rewardsForEpoch(1,1)[1] == 39000000000000000000 # current epoch
+	assert arena.rewardsForEpoch(1,2)[1] == 0 # next epoch
 
 	# Waiting for second stage
 	chain.sleep(arena.firstStageDuration()) # skip 1 stage
@@ -114,10 +119,23 @@ def test_works_in_stage_1_4_5(accounts, tokens, battles):
 	chain.sleep(arena.thirdStageDuration()) # skip 3 stage.
 
 	daiToken.approve(voting, additionalDai, _from(accounts[2]))
-	voting.addDaiToPosition(1, additionalDai, _from(accounts[2]))
+	voting.addDaiToPosition(1, additionalDai, _from(accounts[2])) # 4 stage
+
+	assert arena.votingPositionsValues(1)[1] == 50000000000000000000
+	assert arena.pendingVotesEpoch(1) == 1
+	assert arena.pendingVotes(1) == 26000000000000000000
+	assert arena.rewardsForEpoch(1,1)[1] == 39000000000000000000 # current epoch
+	assert arena.rewardsForEpoch(1,2)[1] == 26000000000000000000 # next epoch
 
 	# Waiting for fifth stage
 	chain.sleep(arena.fourthStageDuration()) # skip 4 stage.
 
 	daiToken.approve(voting, additionalDai, _from(accounts[2]))
-	voting.addDaiToPosition(1, additionalDai, _from(accounts[2]))
+	voting.addDaiToPosition(1, additionalDai, _from(accounts[2])) # 5 stage
+
+	assert arena.votingPositionsValues(1)[1] == 70000000000000000000
+	assert arena.pendingVotesEpoch(1) == 1
+	assert arena.pendingVotes(1) == 52000000000000000000 # pending votes adds correct
+	assert arena.rewardsForEpoch(1,1)[1] == 39000000000000000000 # current epoch
+	assert arena.rewardsForEpoch(1,2)[1] == 52000000000000000000 # next epoch
+
