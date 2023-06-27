@@ -442,8 +442,8 @@ contract NftBattleArena
 		require(getCurrentStage() <= Stage.SecondStage, "Wrong stage!");              // Requires to be at second stage of battle epoch.
 
 		VotingPosition storage votingPosition = votingPositionsValues[votingPositionId];
-		_updateVotingPositionVotes(votingPositionId);
-		_updateVotingRewardDebt(votingPositionId);
+		_updateVotingPosition(votingPositionId);
+		// _updateVotingRewardDebt(votingPositionId);
 
 		uint256 stakingPositionId = votingPosition.stakingPositionId;
 		updateInfo(stakingPositionId);                                                // Updates staking position params from previous epochs.
@@ -468,8 +468,8 @@ contract NftBattleArena
 		require(getCurrentStage() == Stage.FourthStage, "Wrong stage!");              // Requires to be at 4th stage.
 
 		VotingPosition storage votingPosition = votingPositionsValues[votingPositionId];
-		_updateVotingPositionVotes(votingPositionId);
-		_updateVotingRewardDebt(votingPositionId);
+		_updateVotingPosition(votingPositionId);
+		// _updateVotingRewardDebt(votingPositionId);
 
 		uint256 stakingPositionId = votingPosition.stakingPositionId;
 		updateInfo(stakingPositionId);
@@ -499,8 +499,8 @@ contract NftBattleArena
 		uint256 stakingPositionId = votingPosition.stakingPositionId;                 // Gets id of staker position.
 		require(stakingPositionsValues[stakingPositionId].endEpoch == 0, "E1");       // Requires to be staked.
 
-		_updateVotingPositionVotes(votingPositionId);
-		_updateVotingRewardDebt(votingPositionId);
+		_updateVotingPosition(votingPositionId);
+		// _updateVotingRewardDebt(votingPositionId);
 
 		votes = zooFunctions.computeVotesByDai(amount);                               // Gets computed amount of votes from multiplier of dai.
 		// case for NOT swap.
@@ -547,8 +547,8 @@ contract NftBattleArena
 		//require(getCurrentStage() == Stage.FourthStage, "Wrong stage!"); // Require turned off cause its moved to voting position contract due to lack of space for bytecode. // Requires to be at 3rd stage.
 
 		VotingPosition storage votingPosition = votingPositionsValues[votingPositionId];
-		_updateVotingPositionVotes(votingPositionId);
-		_updateVotingRewardDebt(votingPositionId);                                    // Records current reward for voting position to reward debt.
+		_updateVotingPosition(votingPositionId);
+		// _updateVotingRewardDebt(votingPositionId);                                    // Records current reward for voting position to reward debt.
 
 		uint256 zooVotesFromLP = amount * zooVoteRate; // Gets amount of zoo votes from LP.
 		votes = zooFunctions.computeVotesByZoo(zooVotesFromLP);                               // Gets computed amount of votes from multiplier of zoo.
@@ -586,8 +586,8 @@ contract NftBattleArena
 		require(getCurrentStage() == Stage.FirstStage || stakingPositionsValues[stakingPositionId].endEpoch != 0, "Wrong stage!"); // Requires correct stage or nft to be unstaked.
 		require(votingPosition.endEpoch == 0, "E1");                  // Requires to be not liquidated yet.
 
-		_updateVotingPositionVotes(votingPositionId);
-		_updateVotingRewardDebt(votingPositionId);
+		_updateVotingPosition(votingPositionId);
+		// _updateVotingRewardDebt(votingPositionId);
 		_subtractYTokensUserForRewardsFromVotingPosition(votingPositionId);
 
 		if (daiNumber >= votingPosition.daiInvested)                                // If withdraw amount more or equal of maximum invested.
@@ -762,8 +762,8 @@ contract NftBattleArena
 	function withdrawZooFromVoting(uint256 votingPositionId, address voter, uint256 zooNumber, address beneficiary) external only(nftVotingPosition)
 	{
 		VotingPosition storage votingPosition = votingPositionsValues[votingPositionId];
-		_updateVotingPositionVotes(votingPositionId);
-		_updateVotingRewardDebt(votingPositionId);
+		_updateVotingPosition(votingPositionId);
+		// _updateVotingRewardDebt(votingPositionId);
 
 		uint256 stakingPositionId = votingPosition.stakingPositionId;                  // Gets id of staker position from this voting position.
 		StakerPosition storage stakingPosition = stakingPositionsValues[stakingPositionId];
@@ -825,25 +825,23 @@ contract NftBattleArena
 		emit ClaimedRewardFromVoting(currentEpoch, voter, votingPosition.stakingPositionId, beneficiary, daiReward, votingPositionId);
 	}
 
+	// /// @dev Updates yTokensRewardDebt of voting.
+	// /// @dev Called before every action with voting to prevent increasing share % in battle reward.
+	// /// @param votingPositionId ID of voting to be updated.
+	// function _updateVotingRewardDebt(uint256 votingPositionId) internal {
+	// 	(uint256 reward,uint256 zooRewards) = getPendingVoterReward(votingPositionId);
 
-	/// @dev Updates yTokensRewardDebt of voting.
-	/// @dev Called before every action with voting to prevent increasing share % in battle reward.
-	/// @param votingPositionId ID of voting to be updated.
-	function _updateVotingRewardDebt(uint256 votingPositionId) internal {
-		(uint256 reward,uint256 zooRewards) = getPendingVoterReward(votingPositionId);
+	// 	if (reward != 0)
+	// 	{
+	// 		votingPositionsValues[votingPositionId].yTokensRewardDebt += reward;
+	// 	}
+	// 	if (zooRewards != 0)
+	// 	{
+	// 		zooTokensRewardDebt[votingPositionId] += zooRewards;
+	// 	}
 
-		if (reward != 0)
-		{
-			votingPositionsValues[votingPositionId].yTokensRewardDebt += reward;
-		}
-		if (zooRewards != 0)
-		{
-			zooTokensRewardDebt[votingPositionId] += zooRewards;
-		}
-
-		votingPositionsValues[votingPositionId].lastRewardedEpoch = currentEpoch;
-	}
-
+	// 	votingPositionsValues[votingPositionId].lastRewardedEpoch = currentEpoch;
+	// }
 
 	/// @notice Function to calculate pending reward from voting for position with this id.
 	/// @param votingPositionId - id of voter position in battles.
@@ -862,14 +860,14 @@ contract NftBattleArena
 
 			if (saldo > 0)
 			{
-				yTokens += uint256(saldo) * (votingPosition.votes + pendingVotes[votingPositionId]) / rewardsForEpoch[stakingPositionId][i].votes;         // Calculates yTokens amount for voter.
+				yTokens += uint256(saldo) * votingPosition.votes / rewardsForEpoch[stakingPositionId][i].votes;         // Calculates yTokens amount for voter.
 			}
 
 			BattleRewardForEpoch storage leagueRewards = rewardsForEpoch[stakingPositionId][i];
 
 			if (rewardsForEpoch[stakingPositionId][i].votes > 0)
 			{
-				zooRewards += leagueRewards.zooRewards * (votingPosition.votes + pendingVotes[votingPositionId]) / rewardsForEpoch[stakingPositionId][i].votes;         // Calculates yTokens amount for voter.
+				zooRewards += leagueRewards.zooRewards * votingPosition.votes / rewardsForEpoch[stakingPositionId][i].votes;         // Calculates yTokens amount for voter.
 			}
 		}
 
@@ -921,6 +919,7 @@ contract NftBattleArena
 	function pairNft(uint256 stakingPositionId) external
 	{
 		require(getCurrentStage() == Stage.ThirdStage, "Wrong stage!");                       // Requires to be at 3 stage of battle epoch.
+
 		updateInfo(stakingPositionId);
 		BattleRewardForEpoch storage battleReward1 = rewardsForEpoch[stakingPositionId][currentEpoch];
 
@@ -1088,8 +1087,8 @@ contract NftBattleArena
 
 		stakingPositionsValues[winner].lastUpdateEpoch = currentEpoch + 1;          // Update lastUpdateEpoch to next epoch.
 		stakingPositionsValues[loser].lastUpdateEpoch = currentEpoch + 1;           // Update lastUpdateEpoch to next epoch.
-		winnerRewards1.votes = winnerRewards.votes;                                 // Update votes for next epoch.
-		loserRewards1.votes = loserRewards.votes;                                   // Update votes for next epoch.
+		winnerRewards1.votes += winnerRewards.votes;                                 // Update votes for next epoch.
+		loserRewards1.votes += loserRewards.votes;                                   // Update votes for next epoch.
 	}
 
 	/// @notice Function for updating position from lastUpdateEpoch, in case there was no battle with position for a while.
@@ -1104,16 +1103,29 @@ contract NftBattleArena
 		{
 			BattleRewardForEpoch storage rewardOfCurrentEpoch = rewardsForEpoch[stakingPositionId][lastUpdateEpoch + 1];
 			BattleRewardForEpoch storage rewardOflastUpdateEpoch = rewardsForEpoch[stakingPositionId][lastUpdateEpoch];
-			rewardOfCurrentEpoch.votes = rewardOflastUpdateEpoch.votes;             // Get votes from lastUpdateEpoch.
-			rewardOfCurrentEpoch.yTokens = rewardOflastUpdateEpoch.yTokens;         // Get yTokens from lastUpdateEpoch.
+			rewardOfCurrentEpoch.votes += rewardOflastUpdateEpoch.votes;             // Get votes from lastUpdateEpoch.
+			rewardOfCurrentEpoch.yTokens += rewardOflastUpdateEpoch.yTokens;         // Get yTokens from lastUpdateEpoch.
 		}
 
 		position.lastUpdateEpoch = currentEpoch;                                    // Set lastUpdateEpoch to currentEpoch.
 	}
 
-	function _updateVotingPositionVotes(uint256 votingPositionId) internal
+	function _updateVotingPosition(uint256 votingPositionId) internal
 	{
 		VotingPosition storage position = votingPositionsValues[votingPositionId];
+
+		(uint256 reward,uint256 zooRewards) = getPendingVoterReward(votingPositionId);
+
+		if (reward != 0)
+		{
+			position.yTokensRewardDebt += reward;
+		}
+		if (zooRewards != 0)
+		{
+			zooTokensRewardDebt[votingPositionId] += zooRewards;
+		}
+
+		position.lastRewardedEpoch = currentEpoch;
 
 		if (pendingVotesEpoch[votingPositionId] == 0 || pendingVotesEpoch[votingPositionId] == currentEpoch) // If already updated in this epoch - skip.
 			return;
@@ -1123,7 +1135,7 @@ contract NftBattleArena
 		position.votes += votes;
 
 		pendingVotes[votingPositionId] = 0;
-		pendingVotesEpoch[votingPositionId] = currentEpoch;
+		pendingVotesEpoch[votingPositionId] = 0;
 	}
 
 	/// @notice Function to increment epoch.
