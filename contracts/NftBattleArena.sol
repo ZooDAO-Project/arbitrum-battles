@@ -755,13 +755,16 @@ contract NftBattleArena
 	function _reduceZooVotes(uint256 votingPositionId, uint256 stakingPositionId, uint256 zooNumber) internal
 	{
 		VotingPosition storage votingPosition = votingPositionsValues[votingPositionId];
+		StakerPosition storage stakerPosition = stakingPositionsValues[votingPosition.stakingPositionId];
+		updateInfoAboutStakedNumber(stakerPosition.collection);
+
 		uint256 zooVotes = votingPosition.votes - votingPosition.daiVotes;             // Calculates amount of votes got from zoo.
 		uint256 deltaVotes = zooVotes * zooNumber / zooVoteRate / votingPosition.zooInvested; // Calculates average amount of votes from this amount of zoo.
 
 		votingPosition.votes -= deltaVotes;                                            // Decreases amount of votes.
 		votingPosition.zooInvested -= zooNumber;                                       // Decreases amount of zoo invested.
 		poolWeight[address(0)][currentEpoch] -= deltaVotes;
-		poolWeight[stakingPositionsValues[stakingPositionId].collection][currentEpoch] += deltaVotes;
+		poolWeight[stakingPositionsValues[stakingPositionId].collection][currentEpoch] -= deltaVotes;
 
 		updateInfo(stakingPositionId);                                                 // Updates staking position params from previous epochs.
 		BattleRewardForEpoch storage battleReward = rewardsForEpoch[stakingPositionId][currentEpoch];
