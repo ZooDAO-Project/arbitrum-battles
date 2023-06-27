@@ -140,6 +140,103 @@ def test_unstaked_nft(accounts, tokens, battles):
 		voting.createNewVotingPosition(1, daiAmountToVote, True, _from(accounts[1]))
 
 
+# test for numberOfNftsWithNonZeroVotesPending
+def test_numberOfNftsWithNonZeroVotesPending_case_1(accounts, tokens, battles):
+	(vault, functions, governance, staking, voting, arena, listing) = battles
+	(zooToken, daiToken, linkToken, nft, notLpZoo) = tokens
+
+	# two nft
+	stake_nft(staking, accounts[1], nft, 4)
+	stake_nft(staking, accounts[1], nft, 5)
+
+	# Waiting for second stage
+	chain.sleep(arena.firstStageDuration())
+
+	# voted in current epoch
+	daiAmountToVote = 10e18
+	daiToken.approve(voting, daiAmountToVote, _from(accounts[1]))
+	voting.createNewVotingPosition(1, daiAmountToVote, True, _from(accounts[1]))
+	daiToken.approve(voting, daiAmountToVote, _from(accounts[1]))
+	voting.createNewVotingPosition(2, daiAmountToVote, True, _from(accounts[1]))
+
+	assert arena.votingPositionsValues(1)[1] == 10e18
+	assert arena.pendingVotesEpoch(1) == 0
+	assert arena.pendingVotes(1) == 0
+	assert arena.rewardsForEpoch(1,1)[1] == 13e18 # current epoch
+	assert arena.rewardsForEpoch(1,2)[1] == 0 # next epoch
+
+	assert arena.numberOfNftsWithNonZeroVotes() == 2
+	assert arena.numberOfNftsWithNonZeroVotesPending() == 0
+
+	# Waiting for third stage
+	chain.sleep(arena.secondStageDuration()) # skip 2 stage
+	arena.pairNft(1)
+	# Waiting for fourth stage
+	chain.sleep(arena.thirdStageDuration()) # skip 3 stage.
+	# Waiting for fifth stage
+	chain.sleep(arena.fourthStageDuration()) # skip 4 stage.
+
+	# voted for next epoch
+	additionalDai = 20e18
+	daiToken.approve(voting, additionalDai, _from(accounts[1]))
+	voting.createNewVotingPosition(1, daiAmountToVote, True, _from(accounts[1]))
+	daiToken.approve(voting, additionalDai, _from(accounts[1]))
+	voting.createNewVotingPosition(2, daiAmountToVote, True, _from(accounts[1]))
+
+	assert arena.numberOfNftsWithNonZeroVotes() == 2 # still the same
+	assert arena.numberOfNftsWithNonZeroVotesPending() == 0 # still zero.
+
+def test_numberOfNftsWithNonZeroVotesPending_case_2(accounts, tokens, battles):
+	(vault, functions, governance, staking, voting, arena, listing) = battles
+	(zooToken, daiToken, linkToken, nft, notLpZoo) = tokens
+
+	# two nft
+	stake_nft(staking, accounts[1], nft, 4)
+	stake_nft(staking, accounts[1], nft, 5)
+
+	# no votes in current epoch.
+
+	# Waiting for second stage
+	chain.sleep(arena.firstStageDuration())
+
+	assert arena.numberOfNftsWithNonZeroVotes() == 0
+	assert arena.numberOfNftsWithNonZeroVotesPending() == 0
+
+	# Waiting for third stage
+	chain.sleep(arena.secondStageDuration()) # skip 2 stage
+	# Waiting for fourth stage
+	chain.sleep(arena.thirdStageDuration()) # skip 3 stage.
+	# Waiting for fifth stage
+	chain.sleep(arena.fourthStageDuration()) # skip 4 stage.
+
+	# vote for next epoch
+	additionalDai = 20e18
+	daiToken.approve(voting, additionalDai, _from(accounts[1]))
+	voting.createNewVotingPosition(1, additionalDai, True, _from(accounts[1]))
+
+	# twice for one position
+	daiToken.approve(voting, additionalDai, _from(accounts[2]))
+	voting.createNewVotingPosition(2, additionalDai, True, _from(accounts[2]))
+	daiToken.approve(voting, additionalDai, _from(accounts[2]))
+	voting.createNewVotingPosition(2, additionalDai, True, _from(accounts[2]))
+
+	assert arena.votingPositionsValues(1)[1] == additionalDai
+	assert arena.pendingVotesEpoch(1) == 1
+	assert arena.pendingVotes(1) == 26000000000000000000
+	assert arena.rewardsForEpoch(1,1)[1] == 0 # current epoch
+	assert arena.rewardsForEpoch(1,2)[1] == 26000000000000000000 # next epoch
+
+	assert arena.numberOfNftsWithNonZeroVotes() == 0 # zero cause its for next epoch.
+	assert arena.numberOfNftsWithNonZeroVotesPending() == 2 # pending for next epoch.
+
+	chain.sleep(arena.fifthStageDuration()) # skip 4 stage.
+	arena.updateEpoch() # update epoch increases numberOfNftsWithNonZeroVotes from pending.
+	# now epoch 2.
+
+	assert arena.numberOfNftsWithNonZeroVotes() == 2 # number == actual amount of non zero positions
+	assert arena.numberOfNftsWithNonZeroVotesPending() == 0
+
+
 def test_recording_new_voting_values(accounts, second_stage):
 	(zooToken, daiToken, linkToken, nft) = second_stage[0]
 	(vault, functions, governance, staking, voting, arena, listing) = second_stage[1]
@@ -245,7 +342,6 @@ def test_emitting_event(accounts, second_stage):
 	assert event["votingPositionId"] == 1
 
 # vote for next season new mapping tests #
-
 def test_new_mappings_and_values(accounts, fourth_stage):
 	(zooToken, daiToken, linkToken, nft) = fourth_stage[0]
 	(vault, functions, governance, staking, voting, arena, listing) = fourth_stage[1]
@@ -270,8 +366,8 @@ def test_new_mappings_and_values(accounts, fourth_stage):
 	assert arena.pendingVotesEpoch(11) == arena.currentEpoch()
 	assert arena.pendingVotes(11) == daiVoted * 1.3
 
-# tests for league #
 
+# tests for league #
 def test_league_sets_correctly(accounts, fourth_stage):
 	(zooToken, daiToken, linkToken, nft) = fourth_stage[0]
 	(vault, functions, governance, staking, voting, arena, listing) = fourth_stage[1]

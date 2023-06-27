@@ -151,6 +151,7 @@ contract NftBattleArena
 
 	uint256[] public activeStakerPositions;                                        // Array of ZooBattle nfts, which are StakerPositions.
 	uint256 public numberOfNftsWithNonZeroVotes;                                   // Staker positions with votes for, eligible to pair and battle.
+	uint256 public numberOfNftsWithNonZeroVotesPending; // positions eligible for paring from next epoch.
 	uint256 public nftsInGame;                                                     // Amount of Paired nfts in current epoch.
 
 	uint256 public numberOfStakingPositions = 1;
@@ -405,33 +406,47 @@ contract NftBattleArena
 		position.lastRewardedEpoch = epoch;                // Sets starting point for reward to current epoch.
 		position.lastEpochOfIncentiveReward = epoch;       // Sets starting point for incentive rewards calculation.
 
-		BattleRewardForEpoch storage battleReward = rewardsForEpoch[stakingPositionId][epoch];
+		BattleRewardForEpoch storage battleReward = rewardsForEpoch[stakingPositionId][currentEpoch];
+		BattleRewardForEpoch storage battleReward1 = rewardsForEpoch[stakingPositionId][epoch];
 
 		if (battleReward.votes == 0)                                                            // If staker position had zero votes before,
 		{
-			for(uint256 i = 0; i < activeStakerPositions.length; ++i)                           // Iterate for active staker positions.
+			if (epoch == currentEpoch) // if vote for this epoch
 			{
-				if (activeStakerPositions[i] == stakingPositionId)                              // Finds this position.
-				{
-					if (i > numberOfNftsWithNonZeroVotes)                                       // if equal, then its already in needed place in array.
-					{
-						(activeStakerPositions[i], activeStakerPositions[numberOfNftsWithNonZeroVotes]) = (activeStakerPositions[numberOfNftsWithNonZeroVotes], activeStakerPositions[i]);                                              // Swaps this position in array, moving it to last point of non-zero positions.
-					}
-					numberOfNftsWithNonZeroVotes++;                                             // Increases amount of nft eligible for pairing.
-					break;
-				}
+				_swapActiveStakerPositions(stakingPositionId);
+				numberOfNftsWithNonZeroVotes++;
+			}
+			else if (battleReward1.votes == 0) // if vote for next epoch and position have zero votes in both epochs.
+			{
+				_swapActiveStakerPositions(stakingPositionId);
+				numberOfNftsWithNonZeroVotesPending++;
 			}
 		}
+		battleReward1.votes += votes;                                                            // Adds votes for staker position for this epoch.
+		battleReward1.yTokens += yTokens;                                                        // Adds yTokens for this staker position for this epoch.
 
-		battleReward.votes += votes;                                                            // Adds votes for staker position for this epoch.
-		battleReward.yTokens += yTokens;                                                        // Adds yTokens for this staker position for this epoch.
-
-		battleReward.league = zooFunctions.getNftLeague(battleReward.votes);
+		battleReward1.league = zooFunctions.getNftLeague(battleReward1.votes);
 
 		votingPositionId = numberOfVotingPositions;
 		numberOfVotingPositions++;
 
 		emit CreatedVotingPosition(epoch, voter, stakingPositionId, amount, votes, votingPositionId);
+	}
+
+
+	function _swapActiveStakerPositions(uint256 stakingPositionId) internal
+	{
+		for(uint256 i = 0; i < activeStakerPositions.length; ++i)                           // Iterate for active staker positions.
+		{
+			if (activeStakerPositions[i] == stakingPositionId)                              // Finds this position.
+			{
+				if (i > numberOfNftsWithNonZeroVotes)                                       // if equal, then its already in needed place in array.
+				{
+					(activeStakerPositions[i], activeStakerPositions[numberOfNftsWithNonZeroVotes]) = (activeStakerPositions[numberOfNftsWithNonZeroVotes], activeStakerPositions[i]);                                              // Swaps this position in array, moving it to last point of non-zero positions.
+					break;
+				}
+			}
+		}
 	}
 
 	/// @notice Function to recompute votes from dai.
@@ -1150,6 +1165,9 @@ contract NftBattleArena
 		epochsStarts[currentEpoch] = block.timestamp;                               // Records timestamp of new epoch start for ve-Zoo.
 		nftsInGame = 0;                                                             // Nullifies amount of paired nfts.
 		poolWeight[address(0)][currentEpoch] += poolWeight[address(0)][currentEpoch - 1];
+
+		numberOfNftsWithNonZeroVotes += numberOfNftsWithNonZeroVotesPending;
+		numberOfNftsWithNonZeroVotesPending = 0;
 
 		zooFunctions.resetRandom();     // Resets random in zoo functions.
 
