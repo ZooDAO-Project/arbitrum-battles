@@ -641,7 +641,7 @@ contract NftBattleArena
 
 	function addVotesToVeZoo(address collection, uint256 amount) external only(address(veZoo))
 	{
-		require(getCurrentStage() != Stage.FirstStage, "Wrong stage!");
+		require(getCurrentStage() != Stage.FifthStage, "Wrong stage!");
 
 		poolWeight[collection][currentEpoch] += amount * zooVoteRate;
 		poolWeight[address(0)][currentEpoch] += amount * zooVoteRate;
@@ -649,7 +649,7 @@ contract NftBattleArena
 
 	function removeVotesFromVeZoo(address collection, uint256 amount) external only(address(veZoo))
 	{
-		require(getCurrentStage() == Stage.FirstStage, "Wrong stage!");
+		require(getCurrentStage() == Stage.FifthStage, "Wrong stage!");
 
 		updateInfoAboutStakedNumber(collection);
 		poolWeight[collection][currentEpoch] -= amount * zooVoteRate;

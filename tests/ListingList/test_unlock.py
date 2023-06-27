@@ -27,7 +27,6 @@ def test_unlock(accounts, second_stage):
 	assert tx1.events["Transfer"][0]["value"] == value
 
 	chain.sleep(arena.epochDuration() - 1)
-	arena.updateEpoch()
 	tx2 = listingList.unlockZoo(ve_position_id)
 
 	assert tx2.events["Transfer"][0]["value"] == value
