@@ -84,7 +84,7 @@ def test_updateVotingPosition_and_pendingVotes_works_correct(accounts, tokens, b
 	# print("1 position, 2 epoch, rewardsForEpoch", arena.rewardsForEpoch(1,2))
 	# print("2 position, 2 epoch, rewardsForEpoch", arena.rewardsForEpoch(2,2))
 
-	assert arena.getPendingVoterReward(1) == (2, 0) # 1st position wins most of the times.
+	assert arena.getPendingVoterReward(1) == (1, 0) # 1st position wins most of the times.
 	assert arena.getPendingVoterReward(2) == (0, 0)
 	# print("pending reward 1 position", arena.getPendingVoterReward(1))
 	# print("pending reward 2 position", arena.getPendingVoterReward(2))

@@ -3,7 +3,7 @@ from brownie.network import priority_fee
 
 def main(is_need_to_publish = True):
 	priority_fee("auto")
-	accounts.from_mnemonic("enter mnemonic")
+	accounts.from_mnemonic("between impulse tissue sunset student luxury degree humble deputy remain abandon night")
 	account = accounts[0]
 
 	treasury = "0x1ada350F59ff5cFd1b0ABA004F63a0892FA93858" # DAO
@@ -48,7 +48,7 @@ def main(is_need_to_publish = True):
 		governance,
 		treasury,                                              # treasury pool     address/mock
 		#"0x24410c1d93d1216E126b6A6cd32d79f634308b3b",                                              # gas fee pool      address/mock
-		team,                                                  # team              address/mock
+		# team,                                                  # team              address/mock
 		staking,
 		voting, 
 		ve_zoo,

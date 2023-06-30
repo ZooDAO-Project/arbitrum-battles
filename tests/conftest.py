@@ -173,7 +173,7 @@ def battles(accounts, tokens, vault, listing, staking, voting, base_zoo_function
 		governance.address,
 		accounts[0],
 		#accounts[0],
-		accounts[0],# team address
+		# accounts[0],# team address
 		staking.address,
 		voting.address,
 		listingList.address,

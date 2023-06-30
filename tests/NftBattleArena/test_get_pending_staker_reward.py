@@ -101,7 +101,7 @@ def test_reward_calculation_after_choosing_winner(accounts, fifth_stage):
 
 	# Winner rewards
 	reward = arena.rewardsForEpoch(winner, current_epoch)
-	assert reward["yTokensSaldo"] == 8130262481
+	assert reward["yTokensSaldo"] == 9075641838
 
 	reward = arena.rewardsForEpoch(winner, next_epoch)
 	assert reward["yTokensSaldo"] == 0
@@ -110,7 +110,7 @@ def test_reward_calculation_after_choosing_winner(accounts, fifth_stage):
 	print(staking['lastRewardedEpoch'])
 
 	(reward, end) = arena.getPendingStakerReward(winner)
-	assert reward == 208468268
+	assert reward == 94537935
 
 	# Loser rewards
 	reward = arena.rewardsForEpoch(loser, current_epoch)
