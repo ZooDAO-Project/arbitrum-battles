@@ -205,6 +205,9 @@ contract NftBattleArena
 	// id voting position => zooTokenRewardDebt
 	mapping (uint256 => uint256) public zooTokensRewardDebt; // This needs for correct distributing of zoo reward for 50-50 arena battle case.
 
+	// voting position id => zoo debt
+	mapping (uint256 => uint256) public voterIncentiveDebt;
+
 	modifier only(address who)
 	{
 		require(msg.sender == who);
@@ -1133,6 +1136,7 @@ contract NftBattleArena
 		VotingPosition storage position = votingPositionsValues[votingPositionId];
 
 		(uint256 reward,uint256 zooRewards) = getPendingVoterReward(votingPositionId);
+		voterIncentiveDebt[votingPositionId] += computeInvenctiveRewardForVoter(votingPositionId);
 
 		if (reward != 0)
 		{
@@ -1181,6 +1185,12 @@ contract NftBattleArena
 
 	/// @notice Function to calculate incentive reward from ve-Zoo for voter.
 	function calculateIncentiveRewardForVoter(uint256 votingPositionId) external only(nftVotingPosition) returns (uint256 reward)
+	{
+		reward = computeInvenctiveRewardForVoter(votingPositionId) + voterIncentiveDebt[votingPositionId];
+		voterIncentiveDebt[votingPositionId] = 0;
+	}
+
+	function computeInvenctiveRewardForVoter(uint256 votingPositionId) internal returns (uint256 reward)
 	{
 		VotingPosition storage votingPosition = votingPositionsValues[votingPositionId];
 		uint256 stakingPositionId = votingPosition.stakingPositionId;
