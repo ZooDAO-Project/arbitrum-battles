@@ -42,7 +42,7 @@ def main():
 		governance,
 		treasury,                                              # treasury pool     address/mock
 		#"0x24410c1d93d1216E126b6A6cd32d79f634308b3b",                                              # gas fee pool      address/mock
-		team,                                              # team              address/mock
+		# team,                                              # team              address/mock
 		staking,
 		voting, 
 		ve_zoo,

@@ -158,7 +158,7 @@ contract NftBattleArena
 	uint256 public numberOfVotingPositions = 1;
 
 	address public treasury;                                                       // Address of ZooDao insurance pool.
-	address public team;                                                           // Address of ZooDao team reward pool.
+	// address public team;                                                           // Address of ZooDao team reward pool.
 	address public nftStakingPosition; // address of staking positions contract.
 	address public nftVotingPosition;  // address of voting positions contract.
 
@@ -217,14 +217,14 @@ contract NftBattleArena
 	/// @param _vault - address of yearn.
 	/// @param _zooGovernance - address of ZooDao Governance contract.
 	/// @param _treasuryPool - address of ZooDao treasury pool.
-	/// @param _teamAddress - address of ZooDao team reward pool.
+	///  _teamAddress - address of ZooDao team reward pool.
 	constructor (
 		ERC4626 _lpZoo,
 		IERC20Metadata _dai,
 		address _vault,
 		address _zooGovernance,
 		address _treasuryPool,
-		address _teamAddress,
+		// address _teamAddress,
 		address _nftStakingPosition,
 		address _nftVotingPosition,
 		address _veZoo)
@@ -237,7 +237,7 @@ contract NftBattleArena
 		veZoo = ListingList(_veZoo);
 
 		treasury = _treasuryPool;
-		team = _teamAddress;
+		// team = _teamAddress;
 		nftStakingPosition = _nftStakingPosition;
 		nftVotingPosition = _nftVotingPosition;
 
@@ -821,7 +821,7 @@ contract NftBattleArena
 		votingPosition.yTokensRewardDebt = 0;                                            // Nullify reward debt.
 		zooTokensRewardDebt[votingPositionId] = 0;
 
-		yTokenReward = yTokenReward * 835 / 860; // 83.5% of income to voter.
+		yTokenReward = yTokenReward * 95 / 96; // 95% of income to voter.
 
 		require(vault.redeem(yTokenReward) == 0);                                                      // Withdraws dai from vault for yTokens, minus staker %.
 		daiReward = dai.balanceOf(address(this));
@@ -929,7 +929,7 @@ contract NftBattleArena
 
 			if (saldo > 0)
 			{
-				stakerReward += uint256(saldo / 39);                                          // Calculates reward for staker: 2.5% == 25 / 975 == 1 / 39.
+				stakerReward += uint256(saldo / 96);                                          // Calculates reward for staker: 1% = 1 / 96
 			}
 		}
 	}
@@ -1070,7 +1070,7 @@ contract NftBattleArena
 				// Take yield
 				uint256 income = loserRewards.yTokens - tokensToShares(loserRewards.tokensAtBattleStart);
 				require(vault.redeem(income) == 0);
-				dai.transfer(team, dai.balanceOf(address(this)));
+				dai.transfer(treasury, dai.balanceOf(address(this)));
 			} else {
 			// Grant Zoo
 				winnerRewards.zooRewards += zooFunctions.getLeagueZooRewards(winnerRewards.league);
@@ -1091,18 +1091,16 @@ contract NftBattleArena
 		// Income = yTokens at battle end - yTokens at battle start
 		uint256 income1 = winnerRewards.yTokens - tokensToShares(winnerRewards.tokensAtBattleStart);
 		uint256 income2 = loserRewards.yTokens - tokensToShares(loserRewards.tokensAtBattleStart);
-		// uint256 yTokenReward = ((income1 + income2) * (25 + 95 + 15 + 5) / 1000); // 140 / 1000 = 14%
-		require(vault.redeem(((income1 + income2) * (25 + 95 + 15 + 5) / 1000)) == 0);           // Withdraws dai from vault for yTokens, minus staker %.
+
+		require(vault.redeem(((income1 + income2) / 25)) == 0);           // Withdraws dai from vault for yTokens, minus staker %.
+
 		uint256 daiReward = dai.balanceOf(address(this));
+		dai.transfer(treasury, daiReward);                                       // Transfers treasury part. 4 / 100 == 4%
 
-		dai.transfer(treasury, daiReward * 115 / 140);                                       // Transfers treasury part. 9.5% = 95 / 950 = 1 / 10
-		dai.transfer(team, daiReward * 15 / 140);                                     // Transfers team part.
-		dai.transfer(veZoo.royalteRecipient(stakingPositionsValues[winner].collection), daiReward * 5 / 140);
-
-		winnerRewards.yTokensSaldo += int256(income1 + income2 - ((income1 + income2) * (25 + 95 + 15 + 5) / 1000));
+		winnerRewards.yTokensSaldo += int256(((income1 + income2) * 96 / 100));
 		loserRewards.yTokensSaldo -= int256(income2);
 
-		winnerRewards1.yTokens = winnerRewards.yTokens + income2 - ((income1 + income2) * (25 + 95 + 15 + 5) / 1000);
+		winnerRewards1.yTokens = winnerRewards.yTokens + income2 - ((income1 + income2) / 25);
 		loserRewards1.yTokens = loserRewards.yTokens - income2; // Withdraw reward amount.
 
 		stakingPositionsValues[winner].lastUpdateEpoch = currentEpoch + 1;          // Update lastUpdateEpoch to next epoch.
@@ -1274,12 +1272,12 @@ contract NftBattleArena
 	function _withdrawZoo(uint256 zooAmount, address beneficiary) internal
 	{
 		gauge.withdraw(zooAmount); // Withdraw lp zoo from gauge.
-		veBal.claimRewardsFromGauge(address(gauge), team);// claim veBal rewards.
+		veBal.claimRewardsFromGauge(address(gauge), treasury);// claim veBal rewards.
 
 		uint256 zooWithdraw = zooAmount * 995 / 1000; // Calculates amount of zoo to withdraw.
 
 		lpZoo.transfer(beneficiary, zooWithdraw);                                           // Transfers lp to beneficiary.
-		lpZoo.transfer(team, zooAmount * 5 / 1000);
+		lpZoo.transfer(treasury, zooAmount * 5 / 1000);
 	}
 
 	/// @notice Function to view current stage in battle epoch.
