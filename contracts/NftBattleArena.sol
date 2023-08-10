@@ -656,7 +656,7 @@ contract NftBattleArena
 
 		updateInfoAboutStakedNumber(collection);
 		poolWeight[collection][currentEpoch] -= amount * zooVoteRate;
-		poolWeight[address(0)][currentEpoch] += amount * zooVoteRate;
+		poolWeight[address(0)][currentEpoch] -= amount * zooVoteRate;
 	}
 
 	/// @dev Function to liquidate voting position and claim reward.
