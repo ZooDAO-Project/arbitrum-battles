@@ -147,12 +147,12 @@ contract NftVotingPosition is ERC721, Ownable
 
 		uint256 yTokens = nftBattleArena.tokensToShares(daiNumber);
 
-		nftBattleArena.withdrawDaiFromVoting(votingPositionId, msg.sender, beneficiary, daiNumber, true);      // Calls internal withdrawDai.
+		nftBattleArena.withdrawDaiFromVoting(votingPositionId, ownerOf(votingPositionId), beneficiary, daiNumber, true);      // Calls internal withdrawDai.
 
 		if (newVotingPosition == 0)                   // If zero, i.e. new position doesn't exist.
 		{
-			(, newVotingPosition) = nftBattleArena._createVotingPosition(newStakingPositionId, msg.sender, yTokens, daiNumber); // Creates new position to swap there.
-			_safeMint(msg.sender, newVotingPosition);
+			(, newVotingPosition) = nftBattleArena._createVotingPosition(newStakingPositionId, beneficiary, yTokens, daiNumber); // Creates new position to swap there.
+			_safeMint(beneficiary, newVotingPosition);
 			isAllowedToSwapVotes[newVotingPosition] = allowToSwap;
 		}
 		else                                          // If position existing, swap to it.
@@ -160,7 +160,7 @@ contract NftVotingPosition is ERC721, Ownable
 			(,,,,,,,uint256 endEpoch,,,,) = nftBattleArena.votingPositionsValues(newVotingPosition);
 			require(endEpoch == 0, "unstaked");       // Requires for position to exist and still be staked.
 
-			nftBattleArena.addDaiToVoting(newVotingPosition, msg.sender, daiNumber, yTokens);                // swap votes to existing position.
+			nftBattleArena.addDaiToVoting(newVotingPosition, beneficiary, daiNumber, yTokens);                // swap votes to existing position.
 		}
 	}
 
