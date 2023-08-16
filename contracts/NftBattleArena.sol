@@ -878,20 +878,28 @@ contract NftBattleArena
 
 		uint256 stakingPositionId = votingPosition.stakingPositionId;                  // Gets staker position id from voter position.
 
+		uint256 pendingVotes = pendingVotes[votingPositionId];
+		uint256 pendingVotesEpoch = pendingVotesEpoch[votingPositionId];
+		uint256 votes = votingPosition.votes;
 		for (uint256 i = votingPosition.lastRewardedEpoch; i < endEpoch; ++i)
 		{
+			if (i == pendingVotesEpoch + 1 && pendingVotes > 0)
+			{
+            	votes += pendingVotes;
+        	}
+
 			int256 saldo = rewardsForEpoch[stakingPositionId][i].yTokensSaldo;         // Gets saldo from staker position for every epoch in range.
 
 			if (saldo > 0)
 			{
-				yTokens += uint256(saldo) * votingPosition.votes / rewardsForEpoch[stakingPositionId][i].votes;         // Calculates yTokens amount for voter.
+				yTokens += uint256(saldo) * votes / rewardsForEpoch[stakingPositionId][i].votes;         // Calculates yTokens amount for voter.
 			}
 
 			BattleRewardForEpoch storage leagueRewards = rewardsForEpoch[stakingPositionId][i];
 
 			if (rewardsForEpoch[stakingPositionId][i].votes > 0)
 			{
-				zooRewards += leagueRewards.zooRewards * votingPosition.votes / rewardsForEpoch[stakingPositionId][i].votes;         // Calculates yTokens amount for voter.
+				zooRewards += leagueRewards.zooRewards * votes / rewardsForEpoch[stakingPositionId][i].votes;         // Calculates yTokens amount for voter.
 			}
 		}
 
