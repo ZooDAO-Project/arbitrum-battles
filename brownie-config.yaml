@@ -233,7 +233,7 @@ compiler:
     version: null
     optimizer:
       enabled: true
-      runs: 1500
+      runs: 1
     remappings: 
       - "@chainlink=smartcontractkit/chainlink@1.1.0"
       - "@OpenZeppelin=OpenZeppelin/openzeppelin-contracts@4.8.0"

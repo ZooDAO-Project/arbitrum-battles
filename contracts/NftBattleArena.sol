@@ -443,9 +443,10 @@ contract NftBattleArena
 		{
 			if (activeStakerPositions[i] == stakingPositionId)                              // Finds this position.
 			{
-				if (i > numberOfNftsWithNonZeroVotes)                                       // if equal, then its already in needed place in array.
+				uint256 endIndex = numberOfNftsWithNonZeroVotes + numberOfNftsWithNonZeroVotesPending;
+				if (i > endIndex)                                       // if equal, then its already in needed place in array.
 				{
-					(activeStakerPositions[i], activeStakerPositions[numberOfNftsWithNonZeroVotes]) = (activeStakerPositions[numberOfNftsWithNonZeroVotes], activeStakerPositions[i]);                                              // Swaps this position in array, moving it to last point of non-zero positions.
+					(activeStakerPositions[i], activeStakerPositions[endIndex]) = (activeStakerPositions[endIndex], activeStakerPositions[i]);                                              // Swaps this position in array, moving it to last point of non-zero positions.
 					break;
 				}
 			}
