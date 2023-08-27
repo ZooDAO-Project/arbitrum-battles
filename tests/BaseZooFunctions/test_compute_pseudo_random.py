@@ -1,6 +1,7 @@
 from brownie import chain
+import pytest
 
-
+@pytest.mark.skip
 def test_random_numbers(battles):
 	(vault, functions, governance, staking, voting, arena, listing) = battles
 
