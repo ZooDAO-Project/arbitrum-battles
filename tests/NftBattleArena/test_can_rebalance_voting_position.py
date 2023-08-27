@@ -40,9 +40,7 @@ def test_rebalance_votes(accounts, tokens, battles):
 	staking.unstakeNft(2, _from(accounts[1])) # unstake nft in 1 stage for account1
 
 	# (uint256 votingPositionId, uint256 daiNumber)
-	voting.swapVotesFromPositionForUnstackedNft(1, 4000e18, _from(accounts[3]))  # unstake nft in 1 stage for account1
-	
-	voting.swapVotesFromPositionForUnstackedNft(1, 1000e18, _from(accounts[3]))  # unstake nft in 1 stage for account1
+	voting.swapVotesFromPositionForUnstackedNft(1, _from(accounts[3]))  # unstake nft in 1 stage for account1
 
 	with brownie.reverts("Owner of voting position didn't allow to swap votes"):
-		voting.swapVotesFromPositionForUnstackedNft(2, 5 * 10e18, _from(accounts[3])) 
+		voting.swapVotesFromPositionForUnstackedNft(2, _from(accounts[3])) 

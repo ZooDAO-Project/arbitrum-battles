@@ -885,8 +885,8 @@ contract NftBattleArena
 		{
 			if (i == pendingVotesEpoch + 1 && pendingVotes > 0)
 			{
-            	votes += pendingVotes;
-        	}
+				votes += pendingVotes;
+			}
 
 			int256 saldo = rewardsForEpoch[stakingPositionId][i].yTokensSaldo;         // Gets saldo from staker position for every epoch in range.
 
@@ -1133,8 +1133,11 @@ contract NftBattleArena
 		{
 			BattleRewardForEpoch storage rewardOfCurrentEpoch = rewardsForEpoch[stakingPositionId][lastUpdateEpoch + 1];
 			BattleRewardForEpoch storage rewardOflastUpdateEpoch = rewardsForEpoch[stakingPositionId][lastUpdateEpoch];
+
 			rewardOfCurrentEpoch.votes += rewardOflastUpdateEpoch.votes;             // Get votes from lastUpdateEpoch.
 			rewardOfCurrentEpoch.yTokens += rewardOflastUpdateEpoch.yTokens;         // Get yTokens from lastUpdateEpoch.
+
+			rewardOfCurrentEpoch.league = zooFunctions.getNftLeague(rewardOfCurrentEpoch.votes);
 		}
 
 		position.lastUpdateEpoch = currentEpoch;                                    // Set lastUpdateEpoch to currentEpoch.

@@ -172,16 +172,15 @@ contract BaseZooFunctions is Ownable
 		{
 			fourthStageDuration = duration;
 		}
-		else if (stage == Stage.FifthStage)
+		else
 		{
 			fifthStageDuration = duration;
 		}
 	}
 
 	/// @notice Function to set range for leagues.
-	function setLeagueRange(uint256[] memory amount) external onlyOwner 
+	function setLeagueRange(uint256[5] memory amount) external onlyOwner 
 	{
-		require(amount.length == 5, "must set all leagues");
 		woodenLeague = amount[0];
 		bronzeLeague = amount[1];
 		silverLeague = amount[2];

@@ -98,24 +98,24 @@ contract NftVotingPosition is ERC721, Ownable
 	/// @notice Function to move votes from one position to another for unstacked NFT
 	/// @notice If moving to nft not voted before(i.e. creating new position), then newVotingPosition should be zero.
 	/// @param votingPositionId - Id of position votes moving from.
-	/// @param daiNumber - amount of dai moving.
-	function swapVotesFromPositionForUnstackedNft(uint256 votingPositionId, uint256 daiNumber) external
+	function swapVotesFromPositionForUnstackedNft(uint256 votingPositionId) external
 	{
 		require(nftBattleArena.getCurrentStage() == Stage.FirstStage, "Wrong stage!");                         // Requires correct stage.
 		require(isAllowedToSwapVotes[votingPositionId], "Owner of voting position didn't allow to swap votes");
 
-		(uint256 stakingPositionId,,,,,,,,,,,) =  nftBattleArena.votingPositionsValues(votingPositionId);    // Gets id of staker position.
+		(uint256 stakingPositionId,uint256 daiInvested,,,,,,uint256 endEpoch,,,,) =  nftBattleArena.votingPositionsValues(votingPositionId);    // Gets id of staker position.
 		(,uint256 endEpochOldStakingPosition,,,,) =  nftBattleArena.stakingPositionsValues(stakingPositionId);     // Gets endEpoch of staker position.
 		
 		require(endEpochOldStakingPosition != 0, "Nft is not unstacked");                         // Check if nft is unstacked
-		require(daiNumber != 0, "zero vote not allowed");                                                      // Requires for vote amount to be more than zero.
+		// require(daiInvested != 0, "zero vote not allowed");                                                      // Requires for vote amount to be more than zero.
+		require(endEpoch == 0, "E1");                  // Requires to be not liquidated yet.
 
 		uint256 stakingPositionsAmount = nftBattleArena.getStakerPositionsLength();
 		require(stakingPositionsAmount != 0, "There is no opponent for Nft");
 		uint256 index = zooFunctions.computePseudoRandom()%stakingPositionsAmount;
 		uint256 newStakingPositionId = nftBattleArena.activeStakerPositions(index);
 		
-		_swapVotesFromPosition(votingPositionId, daiNumber, newStakingPositionId, ownerOf(votingPositionId), 0, true);
+		_swapVotesFromPosition(votingPositionId, daiInvested, newStakingPositionId, ownerOf(votingPositionId), 0, true);
 	}
 
 	/// @notice Function to move votes from one position to another for owner of voting position

@@ -233,7 +233,7 @@ compiler:
     version: null
     optimizer:
       enabled: true
-      runs: 1100
+      runs: 900
     remappings: 
       - "@chainlink=smartcontractkit/chainlink@1.1.0"
       - "@OpenZeppelin=OpenZeppelin/openzeppelin-contracts@4.8.0"
@@ -248,8 +248,16 @@ console:
   editing_mode: emacs
 
 reports:
-  exclude_paths: null
-  exclude_contracts: null
+  exclude_paths:
+    - contracts/mocks/**/*.*
+    - contracts/testnet/**/*.*
+  exclude_contracts:
+    - ERC721
+    - ERC20
+    - Ownable
+    - Math
+    - ZooTokenMock
+    - Dai
   only_include_project: true
 
 hypothesis:
