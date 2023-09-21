@@ -231,9 +231,10 @@ compiler:
   evm_version: null
   solc:
     version: null
+    viaIR: True
     optimizer:
       enabled: true
-      runs: 900
+      runs: 800
     remappings: 
       - "@chainlink=smartcontractkit/chainlink@1.1.0"
       - "@OpenZeppelin=OpenZeppelin/openzeppelin-contracts@4.8.0"

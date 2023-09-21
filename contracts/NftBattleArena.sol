@@ -1,4 +1,4 @@
-pragma solidity 0.8.13;
+pragma solidity 0.8.17;
 
 // SPDX-License-Identifier: MIT
 
@@ -964,6 +964,7 @@ contract NftBattleArena
 		// Find first staking position and get list of opponents from league for index2
 		for (uint256 i = nftsInGame; i < numberOfNftsWithNonZeroVotes; ++i)
 		{
+			updateInfo(activeStakerPositions[i]);
 			if (activeStakerPositions[i] == stakingPositionId)
 			{
 				index1 = i;
@@ -1004,7 +1005,7 @@ contract NftBattleArena
 				}
 			}
 
-			updateInfo(stakingPosition2);
+			//updateInfo(stakingPosition2);
 			BattleRewardForEpoch storage battleReward2 = rewardsForEpoch[stakingPosition2][currentEpoch];
 			battleReward2.tokensAtBattleStart = sharesToTokens(battleReward2.yTokens);            // Records amount of yTokens on the moment of pairing for opponent.
 			battleReward2.pricePerShareAtBattleStart = vault.exchangeRateCurrent();

@@ -1,4 +1,4 @@
-pragma solidity 0.8.13;
+pragma solidity 0.8.17;
 
 
 import "@OpenZeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
