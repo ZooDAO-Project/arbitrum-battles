@@ -1,4 +1,4 @@
-pragma solidity 0.8.13;
+pragma solidity 0.8.17;
 
 // SPDX-License-Identifier: MIT
 
@@ -95,10 +95,18 @@ contract NftVotingPosition is ERC721, Ownable
 		return nftBattleArena.claimRewardFromVoting(votingPositionId, msg.sender, beneficiary);
 	}
 
+	function batchSwapVotesFromPrositionsForUnstakedNft(uint256[] calldata positions) external
+	{
+		for (uint256 i = 0; i < positions.length; i++)
+		{
+			swapVotesFromPositionForUnstackedNft(positions[i]);
+		}
+	}
+
 	/// @notice Function to move votes from one position to another for unstacked NFT
 	/// @notice If moving to nft not voted before(i.e. creating new position), then newVotingPosition should be zero.
 	/// @param votingPositionId - Id of position votes moving from.
-	function swapVotesFromPositionForUnstackedNft(uint256 votingPositionId) external
+	function swapVotesFromPositionForUnstackedNft(uint256 votingPositionId) public
 	{
 		require(nftBattleArena.getCurrentStage() == Stage.FirstStage, "Wrong stage!");                         // Requires correct stage.
 		require(isAllowedToSwapVotes[votingPositionId], "Owner of voting position didn't allow to swap votes");
