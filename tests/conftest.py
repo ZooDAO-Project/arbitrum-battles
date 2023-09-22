@@ -2,7 +2,7 @@
 import pytest
 
 import brownie
-from brownie import chain
+from brownie import chain, ZERO_ADDRESS
 
 from _utils.utils import _from, pair_all_nfts
 
@@ -124,7 +124,7 @@ def voting(NftVotingPosition, tokens, accounts, base_zoo_functions):
 	(zooToken, daiToken, linkToken, nft, notLpZoo) = tokens
 
 	# note what zooToken now LP zoo for arbitrum.
-	return NftVotingPosition.deploy("zVoterPosition", "ZVP", daiToken.address, notLpZoo.address, zooToken.address, base_zoo_functions.address, accounts[0], {"from": accounts[0]})
+	return NftVotingPosition.deploy("zVoterPosition", "ZVP", daiToken.address, notLpZoo.address, zooToken.address, base_zoo_functions.address, accounts[0], ZERO_ADDRESS, ZERO_ADDRESS, {"from": accounts[0]})
 
 # @pytest.fixture(scope="module")
 # def xZoo(XZoo, tokens, vault, accounts):
