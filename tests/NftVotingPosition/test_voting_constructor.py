@@ -1,4 +1,5 @@
 import brownie
+from brownie import ZERO_ADDRESS
 
 # Sample addresses
 dai = "0x0000000000000000000000000000000000000041"
@@ -9,7 +10,7 @@ def test_set_name_and_symbol(accounts, NftVotingPosition, base_zoo_functions):
 	name = 'Voting'
 	symbol = 'VT'
 
-	staking = NftVotingPosition.deploy(name, symbol, dai, zoo, notLpZoo, base_zoo_functions, accounts[0], {"from": accounts[0]})
+	staking = NftVotingPosition.deploy(name, symbol, dai, zoo, notLpZoo, base_zoo_functions, accounts[0], ZERO_ADDRESS, ZERO_ADDRESS, {"from": accounts[0]})
 
 	assert staking.name() == name
 	assert staking.symbol() == symbol
@@ -19,6 +20,6 @@ def test_set_name_and_symbol(accounts, NftVotingPosition, base_zoo_functions):
 
 
 def test_owner(accounts, NftVotingPosition, base_zoo_functions):
-	staking = NftVotingPosition.deploy("name", "symbol", dai, zoo, notLpZoo, base_zoo_functions, accounts[0], {"from": accounts[0]})
+	staking = NftVotingPosition.deploy("name", "symbol", dai, zoo, notLpZoo, base_zoo_functions, accounts[0], ZERO_ADDRESS, ZERO_ADDRESS, {"from": accounts[0]})
 
 	assert staking.owner() == accounts[0]

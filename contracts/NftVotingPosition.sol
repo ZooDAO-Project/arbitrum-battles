@@ -8,6 +8,7 @@ import "@OpenZeppelin/contracts/access/Ownable.sol";
 import "@OpenZeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 import "./NftBattleArena.sol";
 import "./interfaces/IZooFunctions.sol";
+import "./interfaces/IGLPRewardRouter.sol";
 
 /// @title NftVotingPosition
 /// @notice contract for voters to interacte with BattleArena functions
@@ -23,16 +24,20 @@ contract NftVotingPosition is ERC721, Ownable
 	IERC20 public dai;
 	IERC20 public zoo;
 	ERC4626 public lpZoo;
+	IGLPRewardRouter public glpRewardRouter;
+	address public glpManager;
 
 	mapping(uint256 => bool) public isAllowedToSwapVotes;
 
-	constructor(string memory _name, string memory _symbol, address _dai, address _zoo, address _lpZoo, address baseZooFunctions, address payable _team) ERC721(_name, _symbol)
+	constructor(string memory _name, string memory _symbol, address _dai, address _zoo, address _lpZoo, address baseZooFunctions, address payable _team, address payable _glpRewardRouter, address _glpManager) ERC721(_name, _symbol)
 	{
 		dai = IERC20(_dai);
 		zoo = IERC20(_zoo);
 		lpZoo = ERC4626(_lpZoo);
 		zooFunctions = IZooFunctions(baseZooFunctions);
 		team = _team;
+		glpRewardRouter = IGLPRewardRouter(_glpRewardRouter);
+		glpManager = _glpManager;
 	}
 
 	modifier onlyVotingOwner(uint256 votingPositionId) {
@@ -67,10 +72,48 @@ contract NftVotingPosition is ERC721, Ownable
 		isAllowedToSwapVotes[votingPositionId] = allowToSwapVotes;
 	}
 
+	function getfsGLP(address token, uint256 amount, uint256 minUsdg, uint256 minGlp) internal returns(uint256) {
+		// transfer tokens to Contract
+		IERC20(token).transferFrom(msg.sender, address(this), amount);
+		
+		// take fee 1.5%
+		IERC20(token).transfer(team, 15 * amount / 1000);
+
+		// get fsGLP
+		IERC20(token).approve(glpManager, 985 * amount / 1000);
+		uint256 amountOut = glpRewardRouter.mintAndStakeGlp(token, 985 * amount / 1000, minUsdg, minGlp);
+		
+		return amountOut;
+	}
+
+	function createNewVotingPositionStable(uint256 stakingPositionId, uint256 amount, bool allowToSwapVotes, address token, uint256 minUsdg, uint256 minGlp) payable feePaid(msg.value) external
+	{
+		require(amount != 0, "zero vote not allowed");                                        // Requires for vote amount to be more than zero.
+		require(nftBattleArena.getCurrentStage() != Stage.ThirdStage, "Wrong stage!");
+
+		// get fsGLP
+		uint256 amountOut = getfsGLP(token, amount, minUsdg, minGlp);
+		
+		// send fsGLP to arena
+		dai.transfer(address(nftBattleArena), amountOut);                        // Transfers DAI to arena contract for vote.
+		(,uint256 votingPositionId) = nftBattleArena.createVotingPosition(stakingPositionId, msg.sender, amountOut);
+		_safeMint(msg.sender, votingPositionId);
+		isAllowedToSwapVotes[votingPositionId] = allowToSwapVotes;
+	}
+
 	function addDaiToPosition(uint256 votingPositionId, uint256 amount) payable feePaid(msg.value) external returns (uint256 votes)
 	{
 		dai.transferFrom(msg.sender, address(nftBattleArena), amount);                        // Transfers DAI to arena contract for vote.
 		return nftBattleArena.addDaiToVoting(votingPositionId, msg.sender, amount, 0);               // zero for yTokens coz its not swap.
+	}
+
+	function addDaiToPositionStable(uint256 votingPositionId, uint256 amount, address token, uint256 minUsdg, uint256 minGlp) payable feePaid(msg.value) external returns (uint256 votes)
+	{
+		// get fsGLP
+		uint256 amountOut = getfsGLP(token, amount, minUsdg, minGlp);
+
+		dai.transfer(address(nftBattleArena), amountOut);                        // Transfers DAI to arena contract for vote.
+		return nftBattleArena.addDaiToVoting(votingPositionId, msg.sender, amountOut, 0);               // zero for yTokens coz its not swap.
 	}
 
 	function addZooToPosition(uint256 votingPositionId, uint256 amount) payable feePaid(msg.value) external returns (uint256 votes) 
@@ -83,6 +126,30 @@ contract NftVotingPosition is ERC721, Ownable
 	function withdrawDaiFromVotingPosition(uint256 votingPositionId, address beneficiary, uint256 daiNumber) external onlyVotingOwner(votingPositionId)
 	{
 		nftBattleArena.withdrawDaiFromVoting(votingPositionId, msg.sender, beneficiary, daiNumber, false);
+	}
+
+	function withdrawDaiFromVotingPositionStable(uint256 votingPositionId, address beneficiary, uint256 daiNumber, uint256 minOut, address tokenToReceive) external onlyVotingOwner(votingPositionId)
+	{
+		uint256 balanceBeforeWithdraw = dai.balanceOf(address(this));
+		uint256 lpZooBalanceBeforeWithdraw = lpZoo.balanceOf(address(this));
+
+		nftBattleArena.withdrawDaiFromVoting(votingPositionId, address(this), address(this), daiNumber, false);
+		uint256 diff = dai.balanceOf(address(this)) - balanceBeforeWithdraw;
+
+		// unstake tokens and receive in tokenToReceive
+		uint256 amountOut = glpRewardRouter.unstakeAndRedeemGlp(tokenToReceive, diff, minOut, address(this));
+
+		// take fee 1.5% of tokenToReceive
+		IERC20(tokenToReceive).transfer(team, 15 * amountOut / 1000);
+
+		// transfer 98.5% of tokenToReceive to msg.sender
+		IERC20(tokenToReceive).transfer(msg.sender, 985 * amountOut / 1000);	
+
+		// Send lpZoo to beneficiary if needed
+		uint256 lpZooDiff = lpZooBalanceBeforeWithdraw - lpZoo.balanceOf(address(this));
+		if (lpZooDiff != 0) {
+			lpZoo.transfer(beneficiary, lpZooDiff);
+		}
 	}
 
 	function withdrawZooFromVotingPosition(uint256 votingPositionId, uint256 zooNumber, address beneficiary) external onlyVotingOwner(votingPositionId)
