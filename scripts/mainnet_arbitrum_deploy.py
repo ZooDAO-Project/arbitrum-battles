@@ -7,6 +7,8 @@ def main():
 
 	treasury = "0x1ada350F59ff5cFd1b0ABA004F63a0892FA93858" # DAO
 	team = "0x0dd0782559a043A53D0a6662F673A9E937b6F1fa"     # team
+	glpRewardRouter = "0xB95DB5B167D75e6d04227CfFFA61069348d271F5"
+	glpManager = "0x3963FfC9dff443c2A94f21b129D429891E32ec18"
 
 	vault = ""    # gmx vault
 	dai = ""       # main token for vault.
@@ -28,6 +30,10 @@ def main():
 		dai, # dai
 		zooToken, # zoo token/mock
 		lpZooToken,
+		functions,
+		treasury,
+		glpRewardRouter,
+		glpManager,
 		{"from": account}, publish_source=True)
 
 	x_zoo = XZoo.deploy("xZoo", "XZOO", dai, zooToken, vault, {"from": account}, publish_source=True)
