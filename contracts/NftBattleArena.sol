@@ -327,7 +327,7 @@ contract NftBattleArena
 		position.endEpoch = currentEpoch;                                                       // Records epoch when unstaked.
 		updateInfo(stakingPositionId);                                                          // Updates staking position params from previous epochs.
 
-		if (rewardsForEpoch[stakingPositionId][currentEpoch].votes > 0)                         // If votes for position in current epoch more than zero.
+		if (rewardsForEpoch[stakingPositionId][currentEpoch].votes > 0 || rewardsForEpoch[stakingPositionId][currentEpoch + 1].votes > 0)                         // If votes for position in current or next epoch more than zero.
 		{
 			for(uint256 i = 0; i < numberOfNftsWithNonZeroVotes; ++i)                           // Iterates for non-zero positions.
 			{
@@ -1276,11 +1276,12 @@ contract NftBattleArena
 		}
 	}
 
-	function updateInfoAboutStakedNumber(address collection) public
+	function updateInfoAboutStakedNumber(address collection) public returns (uint256 actualWeight)
 	{
 		uint256 lastUpdateEpoch = lastUpdatesOfStakedNumbers[collection];
 		if (lastUpdateEpoch == currentEpoch)
-			return;
+			return poolWeight[collection][currentEpoch];
+
 		uint256 i = lastUpdateEpoch > 1 ? lastUpdateEpoch : 1;
 		for (; i <= currentEpoch; ++i)
 		{
@@ -1289,6 +1290,7 @@ contract NftBattleArena
 		}
 
 		lastUpdatesOfStakedNumbers[collection] = currentEpoch;
+		return poolWeight[collection][currentEpoch];
 	}
 
 	/// @notice Internal function to calculate amount of zoo to burn and withdraw.

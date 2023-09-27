@@ -1,25 +1,25 @@
 from brownie import *
 from brownie.network import priority_fee
 
-def main(is_need_to_publish = True):
+def main(account = accounts[0], is_need_to_publish = True):
 	priority_fee("auto")
-	accounts.from_mnemonic("between impulse tissue sunset student luxury degree humble deputy remain abandon night")
-	account = accounts[0]
 
 	treasury = "0x1ada350F59ff5cFd1b0ABA004F63a0892FA93858" # DAO
 	team = "0x0dd0782559a043A53D0a6662F673A9E937b6F1fa"     # team
+	glpRewardRouter = "0xB95DB5B167D75e6d04227CfFFA61069348d271F5"
+	glpManager = "0x3963FfC9dff443c2A94f21b129D429891E32ec18"
 
 	vault = "0xdDbdeda15C2Df67ee5F10782679dA93722d3189B"      # gmx vault
 	dai = "0x5402B5F40310bDED796c7D0F3FF6683f5C0cFfdf"       # main token for vault.
 	lpZooToken = "0x178E029173417b1F9C8bC16DCeC6f697bC323746" # balancer lp
-	zooToken = "0x1689A6E1f09658FF37d0bB131514E701045876dA"   # zoo token
+	zooToken = ZooTokenMock.deploy("TestZoo", "TZOO", 18, 2**256-1, {"from": account}, publish_source=is_need_to_publish) # "0x1689A6E1f09658FF37d0bB131514E701045876dA"   # zoo token
 
 	zooVoteRate = 1 # rate for conversion lp to votes.
 	veBal = "0xA0DAbEBAAd1b243BBb243f933013d560819eB66f" # balancer reward distributor
 	gauge = "0x9232EE56ab3167e2d77E491fBa82baBf963cCaCE" # balancer gauge.
 
-	collections = ["0x08f0ebffc998b104b89981a78823d486cab573b5", "0x0ab8837263f6c4f9823aaea2283bc11c9f6bbb8e", "0x1ac7a2fc7f66fa4edf2713a88cd4bad24220c86c"]
-	royalty = [treasury, treasury, treasury]
+	collections = ["0x08f0ebffc998b104b89981a78823d486cab573b5", "0x0ab8837263f6c4f9823aaea2283bc11c9f6bbb8e", "0x1ac7a2fc7f66fa4edf2713a88cd4bad24220c86c", "0x642FfAb2752Df3BCE97083709F36080fb1482c80", "0x9D5D23E22FB63202499B1801354dd2D79194860B", "0x6c5c5b74d5fbae7e508c710bd5647f076f6447d2"]
+	royalty = [treasury, treasury, treasury, treasury, treasury, treasury]
 
 	arenaFee = 10 # 275320000000000 # equal to 50 cents at the price of 1 eth at 1800$
 
@@ -39,6 +39,8 @@ def main(is_need_to_publish = True):
 		lpZooToken,
 		functions,
 		team,
+		glpRewardRouter,
+		glpManager,
 		{"from": account}, publish_source=is_need_to_publish)
 
 	arena = NftBattleArena.deploy(
@@ -65,6 +67,13 @@ def main(is_need_to_publish = True):
 
 	functions.setArenaFee(arenaFee, {"from": account})
 
+	zooToken.transfer("0x4122691B0dd344b3CCd13F4Eb8a71ad22c8CCe5c", 10**22) # Send 10 000 ZOO to Rinat
+	zooToken.transfer("0x47515585ef943F8E56C17BA0f50fb7E28CE1c4Dc", 10**22) # Send 10 000 Zoo to Trevor
+	zooToken.transfer("0x9498af223fa03a0ea9247bfb330600eec2ddc23b", 10**22) # Send 10 000 Zoo to Josh
+	zooToken.transfer(arena, 10**30)
+	zooToken.transfer(voting, 10**30)
+	zooToken.transfer(staking, 10**30)
+
 	result = {
 		"token" : dai,
 		"vault" : vault,
@@ -76,9 +85,6 @@ def main(is_need_to_publish = True):
 		"ve_zoo" : ve_zoo,
 		"staking" : staking,
 		"voting" : voting,
-		# "x_zoo" : x_zoo,
-		# "jackpot_a" : jackpot_a,
-		# "jackpot_b" : jackpot_b,
 		"arena" : arena,
 	}
 
