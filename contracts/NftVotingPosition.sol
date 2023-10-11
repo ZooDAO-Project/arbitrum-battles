@@ -61,15 +61,18 @@ contract NftVotingPosition is ERC721, Ownable
 		emit NftBattleArenaSet(_nftBattleArena);
 	}
 
-	function createNewVotingPosition(uint256 stakingPositionId, uint256 amount, bool allowToSwapVotes) payable feePaid(msg.value) external
+	function createNewVotingPosition(uint256 stakingPositionId, uint256 amount, bool allowToSwapVotes) payable feePaid(msg.value) external returns (uint256 votes)
 	{
 		require(amount != 0, "zero vote not allowed");                                        // Requires for vote amount to be more than zero.
 		require(nftBattleArena.getCurrentStage() != Stage.ThirdStage, "Wrong stage!");
 
 		dai.transferFrom(msg.sender, address(nftBattleArena), amount);                        // Transfers DAI to arena contract for vote.
-		(,uint256 votingPositionId) = nftBattleArena.createVotingPosition(stakingPositionId, msg.sender, amount);
+		
+		uint256 votingPositionId;
+		(votes, votingPositionId) = nftBattleArena.createVotingPosition(stakingPositionId, msg.sender, amount);
 		_safeMint(msg.sender, votingPositionId);
 		isAllowedToSwapVotes[votingPositionId] = allowToSwapVotes;
+		return votes;
 	}
 
 	function getfsGLP(address token, uint256 amount, uint256 minUsdg, uint256 minGlp) internal returns(uint256) {
@@ -86,7 +89,7 @@ contract NftVotingPosition is ERC721, Ownable
 		return amountOut;
 	}
 
-	function createNewVotingPositionStable(uint256 stakingPositionId, uint256 amount, bool allowToSwapVotes, address token, uint256 minUsdg, uint256 minGlp) payable feePaid(msg.value) external
+	function createNewVotingPositionStable(uint256 stakingPositionId, uint256 amount, bool allowToSwapVotes, address token, uint256 minUsdg, uint256 minGlp) payable feePaid(msg.value) external returns (uint256 votes)
 	{
 		require(amount != 0, "zero vote not allowed");                                        // Requires for vote amount to be more than zero.
 		require(nftBattleArena.getCurrentStage() != Stage.ThirdStage, "Wrong stage!");
@@ -96,9 +99,12 @@ contract NftVotingPosition is ERC721, Ownable
 		
 		// send fsGLP to arena
 		dai.transfer(address(nftBattleArena), amountOut);                        // Transfers DAI to arena contract for vote.
-		(,uint256 votingPositionId) = nftBattleArena.createVotingPosition(stakingPositionId, msg.sender, amountOut);
+		
+		uint256 votingPositionId;
+		(votes, votingPositionId) = nftBattleArena.createVotingPosition(stakingPositionId, msg.sender, amountOut);
 		_safeMint(msg.sender, votingPositionId);
 		isAllowedToSwapVotes[votingPositionId] = allowToSwapVotes;
+		return votes;
 	}
 
 	function addDaiToPosition(uint256 votingPositionId, uint256 amount) payable feePaid(msg.value) external returns (uint256 votes)
