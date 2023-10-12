@@ -29,6 +29,7 @@ def main(account = accounts[0], is_need_to_publish = True):
 	functions.setStageDuration(2, 60 * 20, {"from": account}) # 3 stage - 20 mins
 	functions.setStageDuration(3, 60 * 20, {"from": account}) # 4 stage - 20 mins
 	functions.setStageDuration(4, 60 * 20, {"from": account}) # 5 stage - 20 mins
+	functions.setLeagueRange([3000000000000000000, 5000000000000000000, 15000000000000000000, 30000000000000000000, 50000000000000000000], {"from": account})
 	governance = ZooGovernance.deploy(functions, account, {"from": account}, publish_source=is_need_to_publish)
 	ve_zoo = ListingList.deploy(lpZooToken, 4, {"from": account}, publish_source=is_need_to_publish)
 

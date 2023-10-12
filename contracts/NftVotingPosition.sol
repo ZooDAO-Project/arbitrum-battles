@@ -225,6 +225,7 @@ contract NftVotingPosition is ERC721, Ownable
 		}
 
 		nftBattleArena.updateInfo(stakingPositionId);
+		nftBattleArena.updateInfo(newStakingPositionId);
 
 		uint256 yTokens = nftBattleArena.tokensToShares(daiNumber);
 
