@@ -14,7 +14,8 @@ def main(account = accounts[0], is_need_to_publish = True):
 	lpZooToken = "0x2517cd42eE966862e8EcaAc9Abd1CcD272d897b6" # Camelot lp
 	zooToken = ZooTokenMock.deploy("TestZoo", "TZOO", 18, 2**256-1, {"from": account}, publish_source=is_need_to_publish) # "0x1689A6E1f09658FF37d0bB131514E701045876dA"   # zoo token
 
-	zooVoteRate = 1 # rate for conversion lp to votes.
+	zoo_vote_rate_nominator = 1 # rate for conversion lp to votes.
+	zoo_vote_rate_denominator = 20
 
 	collections = ["0x08f0ebffc998b104b89981a78823d486cab573b5", "0x0ab8837263f6c4f9823aaea2283bc11c9f6bbb8e", "0x1ac7a2fc7f66fa4edf2713a88cd4bad24220c86c", "0x642FfAb2752Df3BCE97083709F36080fb1482c80", "0x9D5D23E22FB63202499B1801354dd2D79194860B", "0x6c5c5b74d5fbae7e508c710bd5647f076f6447d2"]
 	royalty = [treasury, treasury, treasury, treasury, treasury, treasury]
@@ -55,7 +56,7 @@ def main(account = accounts[0], is_need_to_publish = True):
 		ve_zoo,
 		{"from": account}, publish_source=is_need_to_publish)
 
-	arena.init(zooVoteRate, lpZooToken, {"from": account})
+	arena.init(zoo_vote_rate_nominator, zoo_vote_rate_denominator, lpZooToken, {"from": account})
 
 	staking.setNftBattleArena(arena, {"from": account})
 	voting.setNftBattleArena(arena, {"from": account})
