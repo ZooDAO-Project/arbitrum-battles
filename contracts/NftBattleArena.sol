@@ -1199,6 +1199,7 @@ contract NftBattleArena
 
 		address collection = stakingPositionsValues[stakingPositionId].collection;
 		updateInfo(stakingPositionId);
+		updateInfoAboutStakedNumber(collection);                                      // Updates info about collection.
 		uint256 lastEpoch = computeLastEpoch(votingPositionId); // Last epoch
 		if (lastEpoch > endEpochOfIncentiveRewards)
 			lastEpoch = endEpochOfIncentiveRewards;

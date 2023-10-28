@@ -9,7 +9,7 @@ def main(account = accounts[0], is_need_to_publish = True):
 	glpRewardRouter = "0xB95DB5B167D75e6d04227CfFFA61069348d271F5"
 	glpManager = "0x3963FfC9dff443c2A94f21b129D429891E32ec18"
 
-	vault = "0xdDbdeda15C2Df67ee5F10782679dA93722d3189B"      # gmx vault
+	vault = "0x5eFA86eAb2a3415acd1fC0F723f44db4EF03c047"      # wrapped magic glp vault
 	dai = "0x5402B5F40310bDED796c7D0F3FF6683f5C0cFfdf"       # main token for vault.
 	lpZooToken = "0x2517cd42eE966862e8EcaAc9Abd1CcD272d897b6" # Camelot lp
 	zooToken = ZooTokenMock.deploy("TestZoo", "TZOO", 18, 2**256-1, {"from": account}, publish_source=is_need_to_publish) # "0x1689A6E1f09658FF37d0bB131514E701045876dA"   # zoo token
