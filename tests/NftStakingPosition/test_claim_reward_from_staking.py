@@ -27,3 +27,12 @@ def test_emitting_event(accounts, tokens, battles):
 	stakingPositionId = 1
 
 	staking.claimRewardFromStaking(stakingPositionId, accounts[1], {"from": accounts[1]})
+ 
+def test_batch_claim_reward_from_staking(accounts, tokens, battles):
+	(zooToken, daiToken, linkToken, nft, lpZoo) = tokens
+	(vault, functions, governance, staking, voting, arena, listing) = battles
+
+	staking.stakeNft(nft.address, tokenId, {"from": accounts[1]})
+	stakingPositionId = 1
+
+	staking.batchClaimRewardFromStaking(stakingPositionId, accounts[1], {"from": accounts[1]})
