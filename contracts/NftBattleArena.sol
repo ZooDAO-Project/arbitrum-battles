@@ -161,7 +161,8 @@ contract NftBattleArena
 	uint256 public baseStakerReward = 133_000 * 10 ** 18 * 15 / 100; // amount of incentives for staker.
 	uint256 public baseVoterReward = 133_000 * 10 ** 18 * 85 / 100; // amount of incentives for voter.
 
-	uint256 public zooVoteRate; // amount of votes for 1 LP with zoo.
+	uint256 public zooVoteRateNominator; // amount of votes for 1 LP with zoo.
+	uint256 public zooVoteRateDenominator;
 
 	uint256 public constant endEpochOfIncentiveRewards = 13;
 
@@ -245,13 +246,15 @@ contract NftBattleArena
 		(firstStageDuration, secondStageDuration, thirdStageDuration, fourthStageDuration, fifthStageDuration, epochDuration) = zooFunctions.getStageDurations();
 	}
 
-	/// @param _zooVoteRate - amount of votes for 1 LP with zoo.
+	/// @param _zooVoteRateNominator - amount of votes for 1 LP with zoo.
+	/// @param _zooVoteRateDenomibator - divider for amount of votes for 1 LP with zoo.
 	/// @param _zoo actual zoo token(not LP).
-	function init(uint256 _zooVoteRate, IERC20Metadata _zoo) external
+	function init(uint256 _zooVoteRateNominator, uint256 _zooVoteRateDenomibator, IERC20Metadata _zoo) external
 	{
-		require(zooVoteRate == 0);
+		require(zooVoteRateNominator == 0);
 
-		zooVoteRate = _zooVoteRate;
+		zooVoteRateNominator = _zooVoteRateNominator;
+		zooVoteRateDenominator = _zooVoteRateDenomibator;
 		zoo = _zoo;
 	}
 
@@ -485,7 +488,7 @@ contract NftBattleArena
 		uint256 stakingPositionId = votingPosition.stakingPositionId;
 		updateInfo(stakingPositionId);
 
-		uint256 zooNumber = votingPosition.zooInvested * zooVoteRate;                 // Gets amount of zoo invested from voting position.
+		uint256 zooNumber = votingPosition.zooInvested * zooVoteRateNominator / zooVoteRateDenominator;                 // Gets amount of zoo invested from voting position.
 		uint256 newZooVotes = zooFunctions.computeVotesByZoo(zooNumber);              // Recomputes zoo to votes.
 		uint256 oldZooVotes = votingPosition.votes - votingPosition.daiVotes;         // Get amount of votes from zoo.
 
@@ -561,7 +564,7 @@ contract NftBattleArena
 		_updateVotingPosition(votingPositionId);
 		// _updateVotingRewardDebt(votingPositionId);                                    // Records current reward for voting position to reward debt.
 
-		uint256 zooVotesFromLP = amount * zooVoteRate; // Gets amount of zoo votes from LP.
+		uint256 zooVotesFromLP = amount * zooVoteRateNominator / zooVoteRateDenominator; // Gets amount of zoo votes from LP.
 		votes = zooFunctions.computeVotesByZoo(zooVotesFromLP);                               // Gets computed amount of votes from multiplier of zoo.
 		require(votingPosition.zooInvested + amount <= votingPosition.daiInvested, "E1");// Requires for votes from zoo to be less than votes from dai.
 
@@ -636,8 +639,8 @@ contract NftBattleArena
 	{
 		require(getCurrentStage() != Stage.FifthStage, "Wrong stage!");
 
-		poolWeight[collection][currentEpoch] += amount * zooVoteRate;
-		poolWeight[address(0)][currentEpoch] += amount * zooVoteRate;
+		poolWeight[collection][currentEpoch] += amount * zooVoteRateNominator / zooVoteRateDenominator;
+		poolWeight[address(0)][currentEpoch] += amount * zooVoteRateNominator / zooVoteRateDenominator;
 	}
 
 	function removeVotesFromVeZoo(address collection, uint256 amount) external only(address(veZoo))
@@ -645,8 +648,8 @@ contract NftBattleArena
 		require(getCurrentStage() == Stage.FifthStage, "Wrong stage!");
 
 		updateInfoAboutStakedNumber(collection);
-		poolWeight[collection][currentEpoch] -= amount * zooVoteRate;
-		poolWeight[address(0)][currentEpoch] -= amount * zooVoteRate;
+		poolWeight[collection][currentEpoch] -= amount * zooVoteRateNominator / zooVoteRateDenominator;
+		poolWeight[address(0)][currentEpoch] -= amount * zooVoteRateNominator / zooVoteRateDenominator;
 	}
 
 	/// @dev Function to liquidate voting position and claim reward.
@@ -754,7 +757,7 @@ contract NftBattleArena
 		updateInfoAboutStakedNumber(stakerPosition.collection);
 
 		uint256 zooVotes = votingPosition.votes - votingPosition.daiVotes;             // Calculates amount of votes got from zoo.
-		uint256 deltaVotes = zooVotes * zooNumber / zooVoteRate / votingPosition.zooInvested; // Calculates average amount of votes from this amount of zoo.
+		uint256 deltaVotes = zooVotes * zooNumber * zooVoteRateDenominator / zooVoteRateNominator / votingPosition.zooInvested; // Calculates average amount of votes from this amount of zoo.
 
 		votingPosition.votes -= deltaVotes;                                            // Decreases amount of votes.
 		votingPosition.zooInvested -= zooNumber;                                       // Decreases amount of zoo invested.

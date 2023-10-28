@@ -147,7 +147,8 @@ def battles(accounts, tokens, vault, listing, staking, voting, base_zoo_function
 	(zooToken, daiToken, linkToken, nft, notLpZoo) = tokens
 
 	listingList = listing[0]
-	zooVoteRate = 1
+	zoo_vote_rate = 1
+	zoo_vote_rate_denominator = 1
 
 	#functions = BaseZooFunctions.deploy(accounts[0], linkToken.address, {"from": accounts[0]}) # vrfCoordinator and link token addresses.
 	governance = ZooGovernance.deploy(base_zoo_functions.address, accounts[0], {"from": accounts[0]})         # functions address and aragon(owner) address.
@@ -167,7 +168,7 @@ def battles(accounts, tokens, vault, listing, staking, voting, base_zoo_function
 		listingList.address,
 		{"from": accounts[0]})
 
-	arena.init(zooVoteRate, notLpZoo)
+	arena.init(zoo_vote_rate, zoo_vote_rate_denominator, notLpZoo)
 
 	# xZoo.setNftBattleArena(arena.address)
 	# jackpotA.setNftBattleArena(arena.address)
