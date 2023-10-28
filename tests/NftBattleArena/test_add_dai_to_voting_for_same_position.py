@@ -35,26 +35,26 @@ def test_league_sets_correctly(accounts, fourth_stage):
 
 	# since this vote in fourth stage, votes come to next epoch.
 	# wooden
-	voting.addDaiToPosition(votingPositionId, 180e18, _from(accounts[1]))
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 500e18
+	voting.addDaiToPosition(votingPositionId, 100e18, _from(accounts[1]))
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] == 390e18
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 0 # league 0
 	# bronze
-	voting.addDaiToPosition(votingPositionId, 1453e18, _from(accounts[1]))
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 2500e18
+	voting.addDaiToPosition(votingPositionId, 700e18, _from(accounts[1]))
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 1500e18
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 1 
 	# silver
-	voting.addDaiToPosition(votingPositionId, 3746e18, _from(accounts[1]))
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 7500e18
+	voting.addDaiToPosition(votingPositionId, 2000e18, _from(accounts[1]))
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 5000e18
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 2
 	# golden
-	voting.addDaiToPosition(votingPositionId, 16307e18, _from(accounts[1]))
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 30000e18
+	voting.addDaiToPosition(votingPositionId, 10000e18, _from(accounts[1]))
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 20000e18
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 3
 	# platinum
-	voting.addDaiToPosition(votingPositionId, 91307e18, _from(accounts[1]))
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 150000e18
+	voting.addDaiToPosition(votingPositionId, 30000e18, _from(accounts[1]))
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 100000e18
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 4
 	# master
-	voting.addDaiToPosition(votingPositionId, 3000e18, _from(accounts[1])) # we up to limit of 150k so almost any amount.
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] > 150000e18
+	voting.addDaiToPosition(votingPositionId, 40000e18, _from(accounts[1])) # we up to limit of 150k so almost any amount.
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] > 100000e18
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 5

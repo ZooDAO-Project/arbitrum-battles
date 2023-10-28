@@ -70,7 +70,7 @@ def test_multiplie_withdraw(accounts, finished_epoch):
 	assert daiInvested == 90000000000000000000
 	assert arena.votingPositionsValues(1)["endEpoch"] == 0
 	assert arena.votingPositionsValues(1)["zooInvested"] == 90000000000000000000 # zoo withdraws
-	assert zooToken.balanceOf(account0) == 113749610500000000000000000
+	assert zooToken.balanceOf(account0) == 118004610500000000000000000
 
 	assert arena.votingPositionsValues(4)["daiInvested"] == 100000000000000000000 # liquidate doesn't reduce daiInvested
 	assert arena.votingPositionsValues(4)["endEpoch"] == 2
@@ -84,7 +84,7 @@ def test_multiplie_withdraw(accounts, finished_epoch):
 	assert arena.votingPositionsValues(1)["daiInvested"] == 90000000000000000000 # liquidate doesn't reduce daiInvested
 	assert arena.votingPositionsValues(1)["endEpoch"] == 2
 	assert arena.votingPositionsValues(1)["zooInvested"] == 90000000000000000000 # liquidate doesn't reduce zooInvested
-	assert zooToken.balanceOf(account0) == 113749700500000000000000000
+	assert zooToken.balanceOf(account0) == 118004700500000000000000000
 	assert daiToken.balanceOf(account0) - (balanceDai + amount + daiInvested) < 1e18
 
 def test_withdraw_votes_recompute(accounts, finished_epoch):
@@ -144,16 +144,16 @@ def test_withdraw_league_change(accounts, finished_epoch):
 	daiToken.approve(voting, daiApprove, _from(accounts[1])) # approve a lot.
 	voting.addDaiToPosition(votingPositionId, 150000e18, _from(accounts[1]))
 
-	# to silver
+	# to golden
 	voting.withdrawDaiFromVotingPosition(10, account1, 145000e18, _from(account1))
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 7500e18
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 2
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 3
 
-	# to bronze
+	# to silver
 	voting.withdrawDaiFromVotingPosition(10, account1, 3400e18, _from(account1)) # overflow
 
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 2500e18
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 1
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 2
 
 	# wooden
 	voting.withdrawDaiFromVotingPosition(10, account1, 10000e18, _from(account1)) # withdraw all and liquidate
@@ -176,7 +176,7 @@ def test_withdraw_league_change_gold(accounts, finished_epoch):
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 150000e18
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 4
 
-	# from platinum to golden
+	# from master to platinem
 	voting.withdrawDaiFromVotingPosition(10, account1, 40000e18, _from(account1))
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 30000e18
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 3
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 4

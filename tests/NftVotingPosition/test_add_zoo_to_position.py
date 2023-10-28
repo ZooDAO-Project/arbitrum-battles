@@ -41,10 +41,9 @@ def test_owner_requirement(accounts, battles, tokens):
 		voting.addZooToPosition(1, 10e18, _from(accounts[1]))
 
 
-def test_zoo_transfer(accounts, tokens, battles, veBal):
+def test_zoo_transfer(accounts, tokens, battles):
 	(vault, functions, governance, staking, voting, arena, listing) = battles
 	(zooToken, daiToken, linkToken, nft, notLpZoo) = tokens
-	(gauge, vebal) = veBal
 
 	zoo_balance_before = zooToken.balanceOf(accounts[1], _from(accounts[1]))
 
@@ -67,4 +66,4 @@ def test_zoo_transfer(accounts, tokens, battles, veBal):
 	voting.addZooToPosition(1, zooAmount, _from(accounts[2]))
 
 	assert zooToken.balanceOf(accounts[2], _from(accounts[2])) == zoo_balance_before - zooAmount
-	assert zooToken.balanceOf(gauge, _from(accounts[2])) == zooAmount
+	assert zooToken.balanceOf(arena, _from(accounts[2])) == zooAmount

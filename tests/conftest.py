@@ -13,17 +13,6 @@ def isolate(fn_isolation):
 	# https://eth-brownie.readthedocs.io/en/v1.10.3/tests-pytest-intro.html#isolation-fixtures
 	pass
 
-
-@pytest.fixture(scope="module")
-def veBal(accounts, tokens, GaugeMock, VeBalRewardMock):
-	(zooToken, daiToken, linkToken, nft, notLpZoo) = tokens
-
-	gauge = GaugeMock.deploy(zooToken, {"from": accounts[0]})
-	vebal = VeBalRewardMock.deploy(zooToken, gauge, {"from": accounts[0]})
-
-	return (gauge, vebal)
-
-
 @pytest.fixture(scope="module")
 def winnersJackpot(fifth_stage, WinnersJackpot, accounts):
 	(zooToken, daiToken, linkToken, nft) = fifth_stage[0]
@@ -154,9 +143,8 @@ def base_zoo_functions(accounts, tokens, BaseZooFunctions):
 # 	return Jackpot.deploy(voting.address, vault.address, base_zoo_functions, "Jackpot B", "JKPTB", {"from": accounts[0]})
 
 @pytest.fixture(scope="module")
-def battles(accounts, tokens, vault, listing, staking, voting, base_zoo_functions, ZooGovernance, NftBattleArena, veBal):
+def battles(accounts, tokens, vault, listing, staking, voting, base_zoo_functions, ZooGovernance, NftBattleArena):
 	(zooToken, daiToken, linkToken, nft, notLpZoo) = tokens
-	(gauge, veBal) = veBal
 
 	listingList = listing[0]
 	zooVoteRate = 1
@@ -179,7 +167,7 @@ def battles(accounts, tokens, vault, listing, staking, voting, base_zoo_function
 		listingList.address,
 		{"from": accounts[0]})
 
-	arena.init(veBal, gauge, zooVoteRate, notLpZoo)
+	arena.init(zooVoteRate, notLpZoo)
 
 	# xZoo.setNftBattleArena(arena.address)
 	# jackpotA.setNftBattleArena(arena.address)

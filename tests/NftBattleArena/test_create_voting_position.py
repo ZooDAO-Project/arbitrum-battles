@@ -386,24 +386,24 @@ def test_league_sets_correctly(accounts, fourth_stage):
 	assert arena.rewardsForEpoch(stakingPositionId, 1)["votes"] == 130000000000000000000 # same
 	# note that votes from previous epochs will be updated only in next epoch. So its only from this voting.
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] == 481e18 # 370 * 1.3
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 0 # league 0
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 1 # league 1
 
 	# bronze
 	voting.createNewVotingPosition(stakingPositionId, 1553e18, True, _from(accounts[1]))
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 2500e18
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 1 
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 2
 	# silver
 	voting.createNewVotingPosition(stakingPositionId, 3846e18, True, _from(accounts[1]))
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 7500e18
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 2
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 3
 	# golden
 	voting.createNewVotingPosition(stakingPositionId, 17307e18, True, _from(accounts[1]))
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 30000e18
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 3
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 4
 	# platinum
 	voting.createNewVotingPosition(stakingPositionId, 92307e18, True, _from(accounts[1]))
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] <= 150000e18
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 4
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 5
 	# master
 	voting.createNewVotingPosition(stakingPositionId, 1000e18, True, _from(accounts[1])) # we up to limit of 150k so almost any amount.
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] > 150000e18

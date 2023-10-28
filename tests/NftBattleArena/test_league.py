@@ -30,11 +30,11 @@ def test_league_updates_from_previous_epochs(accounts, fourth_stage):
 	assert arena.rewardsForEpoch(stakingPositionId, 1)["votes"] == 130000000000000000000 # same
 	# note that votes from previous epochs will be updated only in next epoch.
 	assert arena.rewardsForEpoch(stakingPositionId, 2)["votes"] == 481e18 # 370 * 1.3
-	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 0 # league 0
+	assert arena.rewardsForEpoch(stakingPositionId, 2)["league"] == 1 # league 0
 
 	# platinum
-	voting.createNewVotingPosition(stakingPositionId1, 100000e18, True, _from(accounts[1]))
-	assert arena.rewardsForEpoch(stakingPositionId1, 2)["votes"] == 130000e18
+	voting.createNewVotingPosition(stakingPositionId1, 50000e18, True, _from(accounts[1]))
+	assert arena.rewardsForEpoch(stakingPositionId1, 2)["votes"] == 65000e18
 	assert arena.rewardsForEpoch(stakingPositionId1, 2)["league"] == 4
 	# master
 	voting.createNewVotingPosition(stakingPositionId2, 150000e18, True, _from(accounts[1])) # we up to limit of 150k so almost any amount.
@@ -57,7 +57,7 @@ def test_league_updates_from_previous_epochs(accounts, fourth_stage):
 	assert arena.rewardsForEpoch(stakingPositionId, 4)["votes"] == 611e18 # 481e18 + 130e18, cause old votes updated.
 	assert arena.rewardsForEpoch(stakingPositionId, 4)["league"] == 1 # should update league.
 	# platinum
-	assert arena.rewardsForEpoch(stakingPositionId1, 4)["votes"] == 130130e18
+	assert arena.rewardsForEpoch(stakingPositionId1, 4)["votes"] == 65130e18
 	assert arena.rewardsForEpoch(stakingPositionId1, 4)["league"] == 4 # should update league.
 	# master
 	assert arena.rewardsForEpoch(stakingPositionId2, 4)["votes"] > 150130e18
