@@ -3,7 +3,7 @@ from brownie.network import priority_fee
 
 def main(account = accounts[0], is_need_to_publish = True):
 	priority_fee("auto")
-
+	
 	treasury = "0x1ada350F59ff5cFd1b0ABA004F63a0892FA93858" # DAO
 	team = "0x0dd0782559a043A53D0a6662F673A9E937b6F1fa"     # team
 	glpRewardRouter = "0xB95DB5B167D75e6d04227CfFFA61069348d271F5"
@@ -11,12 +11,10 @@ def main(account = accounts[0], is_need_to_publish = True):
 
 	vault = "0xdDbdeda15C2Df67ee5F10782679dA93722d3189B"      # gmx vault
 	dai = "0x5402B5F40310bDED796c7D0F3FF6683f5C0cFfdf"       # main token for vault.
-	lpZooToken = "0x178E029173417b1F9C8bC16DCeC6f697bC323746" # balancer lp
+	lpZooToken = "0x2517cd42eE966862e8EcaAc9Abd1CcD272d897b6" # Camelot lp
 	zooToken = ZooTokenMock.deploy("TestZoo", "TZOO", 18, 2**256-1, {"from": account}, publish_source=is_need_to_publish) # "0x1689A6E1f09658FF37d0bB131514E701045876dA"   # zoo token
 
 	zooVoteRate = 1 # rate for conversion lp to votes.
-	veBal = "0xA0DAbEBAAd1b243BBb243f933013d560819eB66f" # balancer reward distributor
-	gauge = "0x9232EE56ab3167e2d77E491fBa82baBf963cCaCE" # balancer gauge.
 
 	collections = ["0x08f0ebffc998b104b89981a78823d486cab573b5", "0x0ab8837263f6c4f9823aaea2283bc11c9f6bbb8e", "0x1ac7a2fc7f66fa4edf2713a88cd4bad24220c86c", "0x642FfAb2752Df3BCE97083709F36080fb1482c80", "0x9D5D23E22FB63202499B1801354dd2D79194860B", "0x6c5c5b74d5fbae7e508c710bd5647f076f6447d2"]
 	royalty = [treasury, treasury, treasury, treasury, treasury, treasury]
@@ -57,7 +55,7 @@ def main(account = accounts[0], is_need_to_publish = True):
 		ve_zoo,
 		{"from": account}, publish_source=is_need_to_publish)
 
-	arena.init(veBal, gauge, zooVoteRate, lpZooToken, {"from": account})
+	arena.init(zooVoteRate, lpZooToken, {"from": account})
 
 	staking.setNftBattleArena(arena, {"from": account})
 	voting.setNftBattleArena(arena, {"from": account})

@@ -8,12 +8,12 @@ def test_zoo_rewards(accounts, battles, tokens):
 	(zooToken, daiToken, linkToken, nft, lpZoo) = tokens
 
     # check initial state
-	assert functions.getLeagueZooRewards(0) == 100 * 10 ** 18
-	assert functions.getLeagueZooRewards(1) == 500 * 10 ** 18
-	assert functions.getLeagueZooRewards(2) == 1000 * 10 ** 18
-	assert functions.getLeagueZooRewards(3) == 3000 * 10 ** 18
-	assert functions.getLeagueZooRewards(4) == 12500 * 10 ** 18
-	assert functions.getLeagueZooRewards(5) == 30000 * 10 ** 18
+	assert functions.getLeagueZooRewards(0) == 21 * 10 ** 18
+	assert functions.getLeagueZooRewards(1) == 123 * 10 ** 18
+	assert functions.getLeagueZooRewards(2) == 420 * 10 ** 18
+	assert functions.getLeagueZooRewards(3) == 1818 * 10 ** 18
+	assert functions.getLeagueZooRewards(4) == 6969 * 10 ** 18
+	assert functions.getLeagueZooRewards(5) == 12345 * 10 ** 18
 	assert functions.getLeagueZooRewards(6) == 0
 
 	# reset leagues zoo rewards for league and check

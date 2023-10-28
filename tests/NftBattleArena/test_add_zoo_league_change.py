@@ -28,20 +28,20 @@ def test_league_changes_correctly(accounts, tokens, battles):
 	chain.sleep(arena.firstStageDuration()) # skip 1st(0) stage, now second stage(1)
 	# stage 1, epoch 1 #
 
-	voting.createNewVotingPosition(1, 5000e18, True, _from(accounts[1])) # stakingPositionId, value, from // position 1
-	voting.createNewVotingPosition(2, 5000e18, True, _from(accounts[1])) # stakingPositionId, value, from // position 2
+	voting.createNewVotingPosition(1, 3000e18, True, _from(accounts[1])) # stakingPositionId, value, from // position 1
+	voting.createNewVotingPosition(2, 3000e18, True, _from(accounts[1])) # stakingPositionId, value, from // position 2
 
 	chain.sleep(arena.secondStageDuration()) # skip 2nd(1) stage, now third stage(2)
 	# stage 2, epoch 1 #
 
 	tx = arena.pairNft(1, _from(accounts[1])) # pair for 1 position.
 
-	assert arena.rewardsForEpoch(stakingPositionId, 1)["votes"] == 6500e18
+	assert arena.rewardsForEpoch(stakingPositionId, 1)["votes"] == 3900e18
 	assert arena.rewardsForEpoch(stakingPositionId, 1)["league"] == 2
 
 	chain.sleep(arena.thirdStageDuration()) # skip third stage, now fourth stage
 
 	# from wooden to bronze
-	voting.addZooToPosition(votingPositionId, 5000e18, _from(accounts[1]))
-	assert arena.rewardsForEpoch(stakingPositionId, 1)["votes"] == 13000e18
+	voting.addZooToPosition(votingPositionId, 2000e18, _from(accounts[1]))
+	assert arena.rewardsForEpoch(stakingPositionId, 1)["votes"] == 6500e18
 	assert arena.rewardsForEpoch(stakingPositionId, 1)["league"] == 3

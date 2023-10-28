@@ -82,7 +82,7 @@ def test_pairing_and_chooseWinner_with_id0_in_different_leagues(accounts, tokens
 	print(arena.rewardsForEpoch(1,1)["zooRewards"])
 	reward = 0
 	if (event3["winner"] == True):
-		reward = 100e18
+		reward = 21e18
 
 	assert arena.rewardsForEpoch(1,1)["zooRewards"] == reward
 	print(arena.rewardsForEpoch(1,1)["zooRewards"])
@@ -96,7 +96,7 @@ def test_pairing_and_chooseWinner_with_id0_in_different_leagues(accounts, tokens
 
 	reward1 = 0
 	if (event4["winner"] == True):
-		reward1 = 12500e18
+		reward1 = 12345e18
 
 	assert arena.rewardsForEpoch(2,1)["zooRewards"] == reward1
 	print(arena.rewardsForEpoch(2,1)["zooRewards"])
@@ -110,7 +110,7 @@ def test_pairing_and_chooseWinner_with_id0_in_different_leagues(accounts, tokens
 
 	reward2 = 0
 	if (event5["winner"] == True):
-		reward2 = 1000e18
+		reward2 = 1818e18
 
 	assert arena.rewardsForEpoch(3,1)["zooRewards"] == reward2
 	print(arena.rewardsForEpoch(3,1)["zooRewards"])

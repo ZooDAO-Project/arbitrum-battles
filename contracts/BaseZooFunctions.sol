@@ -26,18 +26,18 @@ contract BaseZooFunctions is Ownable
 
 	uint256 public arenaFee; // 275320000000000; // equal to 50 cents at the price of 1 eth at 1800$
 
-	uint256 public woodenZooRewards = 100 * 10 ** 18;        // Zoo rewards for Wooden League.
-	uint256 public bronzeZooRewards = 500 * 10 ** 18;        // Zoo rewards for Bronze League
-	uint256 public silverZooRewards = 1000 * 10 ** 18;       // Zoo rewards for Silver League
-	uint256 public goldZooRewards = 3000 * 10 ** 18;         // Zoo rewards for Golden League
-	uint256 public platinumZooRewards = 12500 * 10 ** 18;    // Zoo rewards for Platinum League
-	uint256 public masterZooRewards = 30000 * 10 ** 18;      // Zoo rewards for Master League
+	uint256 public woodenZooRewards = 21 * 10 ** 18;        // Zoo rewards for Wooden League.
+	uint256 public bronzeZooRewards = 123 * 10 ** 18;        // Zoo rewards for Bronze League
+	uint256 public silverZooRewards = 420 * 10 ** 18;       // Zoo rewards for Silver League
+	uint256 public goldZooRewards = 1818 * 10 ** 18;         // Zoo rewards for Golden League
+	uint256 public platinumZooRewards = 6969 * 10 ** 18;    // Zoo rewards for Platinum League
+	uint256 public masterZooRewards = 12345 * 10 ** 18;      // Zoo rewards for Master League
 
-	uint256 public woodenLeague = 500 * 10 ** 18;
-	uint256 public bronzeLeague = 2500 * 10 ** 18;
-	uint256 public silverLeague = 7500 * 10 ** 18;
-	uint256 public goldLeague = 30000 * 10 ** 18;
-	uint256 public platinumLeague = 150000 * 10 ** 18;
+	uint256 public woodenLeague = 400 * 10 ** 18;
+	uint256 public bronzeLeague = 1500 * 10 ** 18;
+	uint256 public silverLeague = 5000 * 10 ** 18;
+	uint256 public goldLeague = 20000 * 10 ** 18;
+	uint256 public platinumLeague = 100000 * 10 ** 18;
 	
 	/// @notice Function for setting address of _nftBattleArena contract.
 	/// @param _nftBattleArena - address of _nftBattleArena contract.

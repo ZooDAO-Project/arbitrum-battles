@@ -8,11 +8,11 @@ def test_zoo_rewards(accounts, battles, tokens):
 	(zooToken, daiToken, linkToken, nft, lpZoo) = tokens
 
 	# check initial state
-	assert functions.woodenLeague() == 500 * 10 ** 18
-	assert functions.bronzeLeague() == 2500 * 10 ** 18
-	assert functions.silverLeague() == 7500 * 10 ** 18
-	assert functions.goldLeague() == 30000 * 10 ** 18
-	assert functions.platinumLeague() == 150000 * 10 ** 18
+	assert functions.woodenLeague() == 400 * 10 ** 18
+	assert functions.bronzeLeague() == 1500 * 10 ** 18
+	assert functions.silverLeague() == 5000 * 10 ** 18
+	assert functions.goldLeague() == 20000 * 10 ** 18
+	assert functions.platinumLeague() == 100000 * 10 ** 18
 
 	# reset leagues ranges for league and check
 

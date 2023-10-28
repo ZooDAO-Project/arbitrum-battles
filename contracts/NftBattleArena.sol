@@ -3,8 +3,6 @@ pragma solidity 0.8.17;
 // SPDX-License-Identifier: MIT
 
 import "./interfaces/IVault.sol";
-import "./interfaces/IGauge.sol";
-import "./interfaces/IVeBalRewardDistributor.sol";
 import "./interfaces/IZooFunctions.sol";
 import "./ZooGovernance.sol";
 import "./ListingList.sol";
@@ -33,8 +31,6 @@ contract NftBattleArena
 	IERC20Metadata public dai;                                       // stablecoin token interface
 	IERC20Metadata public zoo;                                       // Zoo token interface
 	VaultAPI public vault;                                           // Vault interface.
-	IVeBalRewardDistributor public veBal; // balancer ve-model
-	IGauge public gauge;                  // balancer gauge
 	ZooGovernance public zooGovernance;                              // zooGovernance contract.
 	IZooFunctions public zooFunctions;                               // zooFunctions contract.
 	ListingList public veZoo;
@@ -162,12 +158,12 @@ contract NftBattleArena
 	address public nftStakingPosition; // address of staking positions contract.
 	address public nftVotingPosition;  // address of voting positions contract.
 
-	uint256 public baseStakerReward = 62500 * 10 ** 18; // amount of incentives for staker.
-	uint256 public baseVoterReward = 500000 * 10 ** 18; // amount of incentives for voter.
+	uint256 public baseStakerReward = 133_000 * 10 ** 18 * 15 / 100; // amount of incentives for staker.
+	uint256 public baseVoterReward = 133_000 * 10 ** 18 * 85 / 100; // amount of incentives for voter.
 
 	uint256 public zooVoteRate; // amount of votes for 1 LP with zoo.
 
-	uint256 public constant endEpochOfIncentiveRewards = 5;
+	uint256 public constant endEpochOfIncentiveRewards = 13;
 
 	mapping (address => mapping (uint256 => uint256)) public poolWeight;
 
@@ -249,16 +245,12 @@ contract NftBattleArena
 		(firstStageDuration, secondStageDuration, thirdStageDuration, fourthStageDuration, fifthStageDuration, epochDuration) = zooFunctions.getStageDurations();
 	}
 
-	/// @param _veBal - address of balancer
-	/// @param _gauge - address of balancer gauge
 	/// @param _zooVoteRate - amount of votes for 1 LP with zoo.
 	/// @param _zoo actual zoo token(not LP).
-	function init(address _veBal, address _gauge, uint256 _zooVoteRate, IERC20Metadata _zoo) external
+	function init(uint256 _zooVoteRate, IERC20Metadata _zoo) external
 	{
 		require(zooVoteRate == 0);
 
-		veBal = IVeBalRewardDistributor(_veBal);
-		gauge = IGauge(_gauge);
 		zooVoteRate = _zooVoteRate;
 		zoo = _zoo;
 	}
@@ -572,9 +564,6 @@ contract NftBattleArena
 		uint256 zooVotesFromLP = amount * zooVoteRate; // Gets amount of zoo votes from LP.
 		votes = zooFunctions.computeVotesByZoo(zooVotesFromLP);                               // Gets computed amount of votes from multiplier of zoo.
 		require(votingPosition.zooInvested + amount <= votingPosition.daiInvested, "E1");// Requires for votes from zoo to be less than votes from dai.
-
-		lpZoo.approve(address(gauge), amount);
-		gauge.deposit(amount); // transfer lp zoo to gauge.
 
 		uint256 stakingPositionId = votingPosition.stakingPositionId;                 // Gets id of staker position.
 		updateInfo(stakingPositionId);                                                // Updates staking position params from previous epochs.
@@ -1296,9 +1285,6 @@ contract NftBattleArena
 	/// @notice Internal function to calculate amount of zoo to burn and withdraw.
 	function _withdrawZoo(uint256 zooAmount, address beneficiary) internal
 	{
-		gauge.withdraw(zooAmount); // Withdraw lp zoo from gauge.
-		veBal.claimRewardsFromGauge(address(gauge), treasury);// claim veBal rewards.
-
 		uint256 zooWithdraw = zooAmount * 995 / 1000; // Calculates amount of zoo to withdraw.
 
 		lpZoo.transfer(beneficiary, zooWithdraw);                                           // Transfers lp to beneficiary.
