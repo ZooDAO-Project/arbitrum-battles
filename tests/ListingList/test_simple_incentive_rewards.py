@@ -14,7 +14,7 @@ def test_one_collection_incentive_reward_of_staker(accounts, finished_epoch):
 	assert tx.return_value > 0
 	assert zooToken.balanceOf(accounts[-1]) > 0
 
-def test_no_rewards_after_fifth_epoch(accounts, finished_epoch):
+def test_no_rewards_after_finish_epoch(accounts, finished_epoch):
 	(zooToken, daiToken, linkToken, nft) = finished_epoch[0]
 	(vault, functions, governance, staking, voting, arena, listing) = finished_epoch[1]
 
