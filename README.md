@@ -29,16 +29,15 @@ ZooDAO responds directly to this question, by creating an ecosystem in which NFT
 
 
 * 1st stage: Staking and unstaking of nfts, claiming rewards from previous epochs.
-* 2nd stage: Voting for nft with dai.
+* 2nd stage: Voting for nft with stablecoins
 * 3rd stage: Pairing of nft for battle.
-* 4th stage: Boosting\voting for nft with Zoo.
+* 4th stage: Boosting\voting for nft with LPs, which contain Zoo
 * 5th stage: Random request and Choosing winners in pair.
 
 ## Technology
 ZooDAO uses several technologies to provide its services:
 
 - **Aragon**: ZooDAO integrates Aragon to provide true autonomy and fairness to the DAO.
-- **Chainlink's VRF**: This technology guarantees fair play by providing true randomness to Battle outcomes.
 - **DeFi protocols**: ZooDAO builds on DeFi protocols to deliver users organic yield, which underpins their rewards.
 
 
@@ -49,30 +48,43 @@ Deploying with Brownie involves a few steps:
 ```bash
 pip install eth-brownie
 ```
-If the installation fails, you can try using sudo:
-```bash
-sudo pip install eth-brownie
-```
+Here are some steps to deploy ZooDAO based on the information available:
 
-2. **Create a New Directory**: Create a new directory and switch to this directory using the following commands: 
-```bash
-cd project
-```
-3. **Initialize a New Brownie Project**: Run the command `brownie init` to start a new Brownie project. This will create boilerplate content that will help you carry on the subsequent steps with Brownie.
-
-4. **Create a Deployment Script**: The simplest way to deploy is via a deployment script. Here is an example deployment script for a basic ERC20, taken from the documentation:
-
+2. **Import necessary modules**: Import the required modules from brownie.
 ```python
-from brownie import *
-
-def main():
-    accounts.deploy(Token, "Test Token", "TEST", 18, "1000 ether")
+import brownie
+from brownie import*
 ```
-Save your deployment script within the `scripts/` folder of your project.
 
-5. **Account Creation and Management**: All interactions on the Ethereum blockchain require interaction with accounts. You can generate a new set of 10 accounts with keys placed in a local json keystore located at `~/.brownie/accounts/dev.json` by default using the command: `brownie accounts generate dev`.
+3. **Define your test functions**: Define your test functions with the necessary parameters. These functions will test various aspects of your contract.
+```python
+def test_one_collection_incentive_reward_of_staker(accounts, finished_epoch):
+    ...
+```
 
-Deploying a smart contract with Brownie involves several steps:
+4. **Update Information**: Update information about staked number or voting number depending on the function.
+```python
+arena.updateInfoAboutStakedNumber(nft)
+```
+
+5. **Claim Rewards**: Claim incentive rewards using the `claimIncentiveStakerReward` or `claimIncentiveVotingReward` function.
+```python
+tx = staking.claimIncentiveStakerReward(1, accounts[-1], {"from": accounts[0]})
+```
+
+6. **Assert Statements**: Use assert statements to check if the return value is greater than 0 and if the balance of the account is greater than 0.
+```python
+assert tx.return_value > 0
+assert zooToken.balanceOf(accounts[-1]) > 0
+```
+
+7. **Update Epoch**: Update the epoch while the current epoch is less than the end epoch of incentive rewards.
+```python
+while arena.currentEpoch() < arena.endEpochOfIncentiveRewards():
+    chain.sleep(arena.epochDuration() + 1)
+    chain.mine(1)
+    arena.updateEpoch({"from": accounts[0]})
+```
 
 6. **Deploy Your Contracts**: You can deploy your contracts in a controlled environment using the `brownie deploy` command. If you want to deploy to a testnet or a real net, you can use the `--network` flag followed by the name of the network:
 ```bash
@@ -86,25 +98,17 @@ brownie test --network <name of the network>
 ```bash
 brownie run <script> [function]
 ```
-
-- `brownie run`: This is the command to tell Brownie that you want to run a script.
-- `<script>`: This is where you specify the path to the script that you want to run.
-- `[function]`: This is an optional argument where you can specify a particular function within the script that you want to execute. If no function is specified, Brownie attempts to run the `main` function.
-
-From the console, you can use the `run` method to execute a script. For example, `run('token')` would execute the `main()` function within `scripts/token.py`.
-
-Please note that `brownie run` is designed to be run without any extra arguments besides the ones listed in `brownie run -h`. 
 ## Testing
 To run a test script in Brownie, you can use the `brownie test` command followed by the path to your test script. For example:
 
 ```bash
-brownie test tests/Example_test.py
+brownie test tests/test_simple_incentive_rewards.py
 ```
 
 If you want to run a specific test function within a test script, you can do so by appending `::` followed by the function name to the script path. For example:
 
 ```bash
-brownie test tests/test_contract_abc.py::specific_test_function_name
+brownie test tests/test_simple_incentive_rewards.py::test_no_rewards_after_finish_epoch
 ```
 
 This will only execute the specified test function within the given test script.
@@ -112,14 +116,31 @@ This will only execute the specified test function within the given test script.
 You can also use the `--coverage` flag to see the coverage of your smart contract:
 
 ```bash
-brownie test tests/Example_test.py --coverage
+brownie test tests/test_simple_incentive_rewards.py --coverage
 ```
 
 This command will run the tests and also provide a coverage report.
 
-Remember to replace `Example_test.py`, `test_contract_abc.py`, and `specific_test_function_name` with your actual test script name and function name.
+
 ## Compilet
-The `brownie compile` command is used to compile your smart contracts. Each time the compiler runs, Brownie compares hashes of each contract source against hashes of the existing compiled versions. If a contract has not changed it is not recompiled⁶.
+To compile a ZooDAO project, you can follow these steps:
+
+1. **Install Brownie**: If you haven't installed Brownie yet, you can do so by running the following command in your terminal:
+```bash
+pip install eth-brownie
+```
+
+2. **Clone the ZooDAO repository**: Clone the ZooDAO repository from GitHub to your local machine. You can do this by running the following command in your terminal:
+```bash
+git clone <ZooDAO GitHub repository URL>
+```
+Please replace `<ZooDAO GitHub repository URL>` with the actual URL of the ZooDAO repository.
+
+3. **Navigate to your project directory**: Open a terminal and navigate to the root directory of your ZooDAO project.
+
+4. **Install dependencies**: Install any dependencies that are required for the project. This is typically done by running `npm install` in your project directory.
+
+5. **Compile the project**: The `brownie compile` command is used to compile your smart contracts. Each time the compiler runs, Brownie compares hashes of each contract source against hashes of the existing compiled versions. If a contract has not changed it is not recompiled⁶.
 ```bash
 brownie compile
 ```
@@ -127,6 +148,9 @@ If you wish to force a recompile of the entire project, you can use `brownie com
 ```bash
 brownie compile --all
 ```
+6. **Review the results**: If the compilation is successful, you should see a message indicating that the compilation was successful. If there are any errors, they will be displayed in the terminal.
+
+
 ## Documentation
 | contract | description |
 | --- | --- |
@@ -137,7 +161,7 @@ brownie compile --all
 | ZooGovernance | Connects battles with Functions. |
 | ListingList | ve-Model zoo contract. List of eligible projects for battles |
 | veZOO| The mechanism of time locking tokens for a set period. The longer you elect to lock up your tokens, the more weight your tokens may get.|
-|Jackpot|Сontract for apply for a lottery for % of yield generated in battles.|
+|WinnersJackpot|Сontract for apply for a lottery for % of yield generated in battles.|
 | Yield farming |Liquidity mining, is a way to generate passive income while holdings crypto assets. To participate in yield farming, owners of a cryptocurrency or digital asset lend their crypto assets in order to generate returns and rewards. We recommend users participate in yield farming only after understanding the associated benefits and risks.|
 
 ## License

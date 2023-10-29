@@ -1,6 +1,5 @@
 import brownie
 from brownie import*
-
 def test_one_collection_incentive_reward_of_staker(accounts, finished_epoch):
     (zooToken, daiToken, linkToken, nft) = finished_epoch[0]
     (vault, functions, governance, staking, voting, arena, listing) = finished_epoch[1]
