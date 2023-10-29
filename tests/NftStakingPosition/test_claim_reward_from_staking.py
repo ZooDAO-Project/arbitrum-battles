@@ -35,4 +35,4 @@ def test_batch_claim_reward_from_staking(accounts, tokens, battles):
 	staking.stakeNft(nft.address, tokenId, {"from": accounts[1]})
 	stakingPositionId = 1
 
-	staking.batchClaimRewardFromStaking(stakingPositionId, accounts[1], {"from": accounts[1]})
+	staking.batchClaimRewardFromStaking([stakingPositionId], accounts[1], {"from": accounts[1]})
