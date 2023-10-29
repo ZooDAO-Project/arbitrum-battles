@@ -140,7 +140,7 @@ Please replace `<ZooDAO GitHub repository URL>` with the actual URL of the ZooDA
 
 4. **Install dependencies**: Install any dependencies that are required for the project. This is typically done by running `npm install` in your project directory.
 
-5. **Compile the project**: The `brownie compile` command is used to compile your smart contracts. Each time the compiler runs, Brownie compares hashes of each contract source against hashes of the existing compiled versions. If a contract has not changed it is not recompiled⁶.
+5. **Compile the project**: The `brownie compile` command is used to compile your smart contracts. Each time the compiler runs, Brownie compares hashes of each contract source against hashes of the existing compiled versions. If a contract has not changed it is not recompiled.
 ```bash
 brownie compile
 ```
