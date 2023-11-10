@@ -192,6 +192,8 @@ contract NftBattleArena
 	// epoch number => timestamp of epoch start
 	mapping (uint256 => uint256) public epochsStarts;
 
+	// epoch number => votes from stablecoins played in this epoch
+	mapping (uint256 => uint256) public playedVotesByEpoch;
 
 	// id voting position => pendingVotes
 	mapping (uint256 => uint256) public pendingVotes;      // Votes amount for next epoch.
@@ -950,7 +952,7 @@ contract NftBattleArena
 		// this require makes impossible to pair if there are no available pair. // require(numberOfNftsWithNonZeroVotes / 2 > nftsInGame / 2, "E1");            // Requires enough nft for pairing.
 		uint256 index1;                                                                       // Index of nft paired for.
 		uint256[] memory leagueList = new uint256[](numberOfNftsWithNonZeroVotes);
-		uint256 NftsInSameLeague = 0;
+		uint256 nftsInSameLeague = 0;
 		bool idFound;
 
 		// Find first staking position and get list of opponents from league for index2
@@ -967,8 +969,8 @@ contract NftBattleArena
 			// In the same league
 			else if (battleReward1.league == rewardsForEpoch[activeStakerPositions[i]][currentEpoch].league)
 			{
-				leagueList[NftsInSameLeague] = activeStakerPositions[i];
-				NftsInSameLeague++;
+				leagueList[nftsInSameLeague] = activeStakerPositions[i];
+				nftsInSameLeague++;
 			}
 		}
 		require(idFound, "E1");
@@ -980,13 +982,13 @@ contract NftBattleArena
 		battleReward1.tokensAtBattleStart = sharesToTokens(battleReward1.yTokens);            // Records amount of yTokens on the moment of pairing for candidate.
 		battleReward1.pricePerShareAtBattleStart = vault.exchangeRateCurrent();
 
-		if (NftsInSameLeague != 0)
+		if (nftsInSameLeague != 0)
 		{
 			uint256 index2;
 			stakingPosition2 = leagueList[0];
-			if (NftsInSameLeague > 1)
+			if (nftsInSameLeague > 1)
 			{
-				stakingPosition2 = leagueList[zooFunctions.computePseudoRandom() % NftsInSameLeague];
+				stakingPosition2 = leagueList[zooFunctions.computePseudoRandom() % nftsInSameLeague];
 			}
 
 			for (uint256 i = nftsInGame; i < numberOfNftsWithNonZeroVotes; ++i)
@@ -1036,6 +1038,7 @@ contract NftBattleArena
 		uint256 randomNumber = zooFunctions.getRandomResult();
 		uint256 votes1 = rewardsForEpoch[pair.token1][currentEpoch].votes;
 		uint256 votes2 = rewardsForEpoch[pair.token2][currentEpoch].votes;
+		playedVotesByEpoch[currentEpoch] += votes1 + votes2;
 
 		if (pair.token2 == 0)
 		{
@@ -1112,6 +1115,9 @@ contract NftBattleArena
 		stakingPositionsValues[loser].lastUpdateEpoch = currentEpoch + 1;           // Update lastUpdateEpoch to next epoch.
 		winnerRewards1.votes += winnerRewards.votes;                                 // Update votes for next epoch.
 		loserRewards1.votes += loserRewards.votes;                                   // Update votes for next epoch.
+
+		winnerRewards1.league = zooFunctions.getNftLeague(winnerRewards1.votes);	// Update league for next epoch.
+		loserRewards1.league = zooFunctions.getNftLeague(loserRewards1.votes);		// Update league for next epoch.
 	}
 
 	/// @notice Function for updating position from lastUpdateEpoch, in case there was no battle with position for a while.
@@ -1140,7 +1146,7 @@ contract NftBattleArena
 	{
 		VotingPosition storage position = votingPositionsValues[votingPositionId];
 
-		(uint256 reward,uint256 zooRewards) = getPendingVoterReward(votingPositionId);
+		(uint256 reward, uint256 zooRewards) = getPendingVoterReward(votingPositionId);
 		voterIncentiveDebt[votingPositionId] += computeInvenctiveRewardForVoter(votingPositionId);
 
 		if (reward != 0)
@@ -1191,6 +1197,7 @@ contract NftBattleArena
 	/// @notice Function to calculate incentive reward from ve-Zoo for voter.
 	function calculateIncentiveRewardForVoter(uint256 votingPositionId) external only(nftVotingPosition) returns (uint256 reward)
 	{
+		_updateVotingPosition(votingPositionId);
 		reward = computeInvenctiveRewardForVoter(votingPositionId) + voterIncentiveDebt[votingPositionId];
 		voterIncentiveDebt[votingPositionId] = 0;
 	}
@@ -1203,17 +1210,20 @@ contract NftBattleArena
 		address collection = stakingPositionsValues[stakingPositionId].collection;
 		updateInfo(stakingPositionId);
 		updateInfoAboutStakedNumber(collection);                                      // Updates info about collection.
+		
 		uint256 lastEpoch = computeLastEpoch(votingPositionId); // Last epoch
 		if (lastEpoch > endEpochOfIncentiveRewards)
 			lastEpoch = endEpochOfIncentiveRewards;
+		if (pendingVotesEpoch[votingPositionId] != 0 && lastEpoch > pendingVotesEpoch[votingPositionId])
+			lastEpoch = pendingVotesEpoch[votingPositionId];
 
 		for (uint256 i = votingPosition.lastEpochOfIncentiveReward; i < lastEpoch; ++i)
 		{
-			if (poolWeight[address(0)][i] != 0 && rewardsForEpoch[stakingPositionId][i].votes != 0)
-				reward += baseVoterReward * votingPosition.daiVotes * poolWeight[collection][i] / poolWeight[address(0)][i] / rewardsForEpoch[stakingPositionId][i].votes;
+			if (poolWeight[address(0)][i] != 0 && rewardsForEpoch[stakingPositionId][i].yTokensSaldo != 0) // Check that collection has non-zero weight in veZoo and nft played in battle.
+				reward += baseVoterReward * votingPosition.daiVotes * poolWeight[collection][i] / (poolWeight[address(0)][i] * playedVotesByEpoch[i]);
 		}
 
-		votingPosition.lastEpochOfIncentiveReward = currentEpoch;
+		votingPosition.lastEpochOfIncentiveReward = lastEpoch;
 	}
 
 	/// @notice Function to calculate incentive reward from ve-Zoo for staker.
@@ -1232,7 +1242,7 @@ contract NftBattleArena
 		for (uint256 i = stakingPosition.lastEpochOfIncentiveReward; i < end; ++i)
 		{
 			if (poolWeight[address(0)][i] != 0)
-				reward += baseStakerReward * poolWeight[collection][i] / poolWeight[address(0)][i] / numberOfStakedNftsInCollection[i][collection];
+				reward += baseStakerReward * poolWeight[collection][i] / (poolWeight[address(0)][i] * numberOfStakedNftsInCollection[i][collection]);
 		}
 
 		stakingPosition.lastEpochOfIncentiveReward = currentEpoch;

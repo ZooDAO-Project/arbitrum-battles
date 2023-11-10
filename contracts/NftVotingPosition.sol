@@ -89,7 +89,7 @@ contract NftVotingPosition is ERC721, Ownable
 		return amountOut;
 	}
 
-	function createNewVotingPositionStable(uint256 stakingPositionId, uint256 amount, bool allowToSwapVotes, address token, uint256 minUsdg, uint256 minGlp) payable feePaid(msg.value) external returns (uint256 votes)
+	function createNewVotingPositionStablecoin(uint256 stakingPositionId, uint256 amount, bool allowToSwapVotes, address token, uint256 minUsdg, uint256 minGlp) payable feePaid(msg.value) external returns (uint256 votes)
 	{
 		require(amount != 0, "zero vote not allowed");                                        // Requires for vote amount to be more than zero.
 		require(nftBattleArena.getCurrentStage() != Stage.ThirdStage, "Wrong stage!");
@@ -113,7 +113,7 @@ contract NftVotingPosition is ERC721, Ownable
 		return nftBattleArena.addDaiToVoting(votingPositionId, msg.sender, amount, 0);               // zero for yTokens coz its not swap.
 	}
 
-	function addDaiToPositionStable(uint256 votingPositionId, uint256 amount, address token, uint256 minUsdg, uint256 minGlp) payable feePaid(msg.value) external returns (uint256 votes)
+	function addDaiToPositionStablecoin(uint256 votingPositionId, uint256 amount, address token, uint256 minUsdg, uint256 minGlp) payable feePaid(msg.value) external returns (uint256 votes)
 	{
 		// get fsGLP
 		uint256 amountOut = getfsGLP(token, amount, minUsdg, minGlp);
@@ -134,7 +134,7 @@ contract NftVotingPosition is ERC721, Ownable
 		nftBattleArena.withdrawDaiFromVoting(votingPositionId, msg.sender, beneficiary, daiNumber, false);
 	}
 
-	function withdrawDaiFromVotingPositionStable(uint256 votingPositionId, address beneficiary, uint256 daiNumber, uint256 minOut, address tokenToReceive) external onlyVotingOwner(votingPositionId)
+	function withdrawDaiFromVotingPositionStablecoin(uint256 votingPositionId, address beneficiary, uint256 daiNumber, uint256 minOut, address tokenToReceive) external onlyVotingOwner(votingPositionId)
 	{
 		uint256 balanceBeforeWithdraw = dai.balanceOf(address(this));
 		uint256 lpZooBalanceBeforeWithdraw = lpZoo.balanceOf(address(this));
@@ -300,7 +300,7 @@ contract NftVotingPosition is ERC721, Ownable
 			uint256 claimed = nftBattleArena.calculateIncentiveRewardForVoter(votingPositionIds[i]);
 			reward += claimed;
 
-			emit ClaimedIncentiveRewardFromVoting(msg.sender, beneficiary, reward, votingPositionIds[i]);
+			emit ClaimedIncentiveRewardFromVoting(msg.sender, beneficiary, claimed, votingPositionIds[i]);
 		}
 		zoo.transfer(beneficiary, reward);
 	}
