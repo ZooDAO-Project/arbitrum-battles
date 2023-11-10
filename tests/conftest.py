@@ -182,7 +182,8 @@ def battles(accounts, tokens, vault, listing, staking, voting, base_zoo_function
 	royalty_receiver = accounts[9]
 	listingList.allowNewContractForStaking(nft.address, royalty_receiver, {"from": accounts[0]})
 
-	zooToken.transfer(staking, arena.baseStakerReward() * 100)
+	zooToken.transfer(staking, arena.baseStakerReward() * (arena.endEpochOfIncentiveRewards() - 1))
+	notLpZoo.transfer(voting, arena.baseVoterReward() * (arena.endEpochOfIncentiveRewards() - 1))
 
 	return (vault, base_zoo_functions, governance, staking, voting, arena, listingList)
 

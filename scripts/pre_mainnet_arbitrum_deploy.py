@@ -9,13 +9,13 @@ def main(account = accounts[0], is_need_to_publish = True):
 	glpRewardRouter = "0xB95DB5B167D75e6d04227CfFFA61069348d271F5"
 	glpManager = "0x3963FfC9dff443c2A94f21b129D429891E32ec18"
 
-	vault = "0x5eFA86eAb2a3415acd1fC0F723f44db4EF03c047"      # wrapped magic glp vault
+	vault = "0x9d284e037c20f029c8C56bbE4ff7C0F8de0FA4A9"      # wrapped magic glp vault
 	dai = "0x5402B5F40310bDED796c7D0F3FF6683f5C0cFfdf"       # main token for vault.
 	lpZooToken = "0x2517cd42eE966862e8EcaAc9Abd1CcD272d897b6" # Camelot lp
 	zooToken = ZooTokenMock.deploy("TestZoo", "TZOO", 18, 2**256-1, {"from": account}, publish_source=is_need_to_publish) # "0x1689A6E1f09658FF37d0bB131514E701045876dA"   # zoo token
 
-	zoo_vote_rate_nominator = 1 # rate for conversion lp to votes.
-	zoo_vote_rate_denominator = 20
+	zoo_vote_rate_nominator = 20 # rate for conversion lp to votes.
+	zoo_vote_rate_denominator = 1
 
 	collections = ["0x08f0ebffc998b104b89981a78823d486cab573b5", "0x0ab8837263f6c4f9823aaea2283bc11c9f6bbb8e", "0x1ac7a2fc7f66fa4edf2713a88cd4bad24220c86c", "0x642FfAb2752Df3BCE97083709F36080fb1482c80", "0x9D5D23E22FB63202499B1801354dd2D79194860B", "0x6c5c5b74d5fbae7e508c710bd5647f076f6447d2"]
 	royalty = [treasury, treasury, treasury, treasury, treasury, treasury]
@@ -44,7 +44,7 @@ def main(account = accounts[0], is_need_to_publish = True):
 		{"from": account}, publish_source=is_need_to_publish)
 
 	arena = NftBattleArena.deploy(
-		lpZooToken, # zoo token/mock
+		lpZooToken, # lpZoo
 		dai, # frax
 		vault, 
 		governance,
@@ -56,7 +56,7 @@ def main(account = accounts[0], is_need_to_publish = True):
 		ve_zoo,
 		{"from": account}, publish_source=is_need_to_publish)
 
-	arena.init(zoo_vote_rate_nominator, zoo_vote_rate_denominator, lpZooToken, {"from": account})
+	arena.init(zoo_vote_rate_nominator, zoo_vote_rate_denominator, zooToken, {"from": account})	
 
 	staking.setNftBattleArena(arena, {"from": account})
 	voting.setNftBattleArena(arena, {"from": account})

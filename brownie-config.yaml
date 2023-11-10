@@ -231,7 +231,7 @@ compiler:
   evm_version: null
   solc:
     version: null
-    viaIR: True
+    viaIR: true
     optimizer:
       enabled: true
       runs: 800
