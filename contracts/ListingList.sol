@@ -114,6 +114,7 @@ contract ListingList is Ownable, ERC721
 	
 	function voteForNftCollection(address collection, uint256 amount) public
 	{
+		require(amount != 0, "Zero-vote has not allowed");
 		require(eligibleCollections[collection], "NFT collection is not allowed");
 
 		zoo.transferFrom(msg.sender, address(this), amount);

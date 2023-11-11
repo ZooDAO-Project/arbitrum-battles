@@ -89,7 +89,8 @@ contract YearnMock is ERC20
 
 		_burn(msg.sender, shares);
 
-		frax.transfer(msg.sender, withdrawn);
+		if (withdrawn > 0)
+			frax.transfer(msg.sender, withdrawn);
 
 		mockBalance -= withdrawn;
 

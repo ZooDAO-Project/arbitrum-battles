@@ -95,6 +95,7 @@ contract Dai is LibNote {
 	function transferFrom(address src, address dst, uint wad)
 		public returns (bool)
 	{
+		require(wad > 0, "Zero-value transfer error");
 		require(balanceOf[src] >= wad, "Dai/insufficient-balance");
 		if (src != msg.sender && allowance[src][msg.sender] != uint(-1)) {
 			require(allowance[src][msg.sender] >= wad, "Dai/insufficient-allowance");

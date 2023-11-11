@@ -614,7 +614,7 @@ contract NftBattleArena
 		if (toSwap == false)                                                        // If called not through swap.
 		{
 			require(vault.redeem(shares) == 0);
-			dai.transfer(voter, dai.balanceOf(address(this)));
+			_stablecoinTransfer(voter, dai.balanceOf(address(this)));
 		}
 		BattleRewardForEpoch storage battleReward = rewardsForEpoch[stakingPositionId][currentEpoch];
 
@@ -669,7 +669,7 @@ contract NftBattleArena
 		if (toSwap == false)                                         // If false, withdraws tokens from vault for regular liquidate.
 		{
 			require(vault.redeem(yTokens) == 0);
-			dai.transfer(beneficiary, dai.balanceOf(address(this))); // True when called from swapVotes, ignores withdrawal to re-assign them for another position.
+			_stablecoinTransfer(beneficiary, dai.balanceOf(address(this))); // True when called from swapVotes, ignores withdrawal to re-assign them for another position.
 		}
 
 		_withdrawZoo(votingPosition.zooInvested, beneficiary);                      // Even if it is swap, withdraws all zoo.
@@ -824,7 +824,7 @@ contract NftBattleArena
 		require(vault.redeem(yTokenReward) == 0);                                                      // Withdraws dai from vault for yTokens, minus staker %.
 		daiReward = dai.balanceOf(address(this));
 
-		dai.transfer(beneficiary, daiReward);                             // Transfers voter part of reward.
+		_stablecoinTransfer(beneficiary, daiReward);                             // Transfers voter part of reward.
 
 		BattleRewardForEpoch storage battleReward = rewardsForEpoch[votingPosition.stakingPositionId][currentEpoch];
 		if (battleReward.yTokens >= yTokenReward)
@@ -914,7 +914,7 @@ contract NftBattleArena
 
 		require(vault.redeem(yTokenReward) == 0);                                                           // Gets reward from yearn.
 		daiReward = dai.balanceOf(address(this));
-		dai.transfer(beneficiary, daiReward);
+		_stablecoinTransfer(beneficiary, daiReward);
 
 		emit ClaimedRewardFromStaking(currentEpoch, staker, stakingPositionId, beneficiary, yTokenReward, daiReward);
 	}
@@ -1078,7 +1078,7 @@ contract NftBattleArena
 				// Take yield
 				uint256 income = loserRewards.yTokens - tokensToShares(loserRewards.tokensAtBattleStart);
 				require(vault.redeem(income) == 0);
-				dai.transfer(treasury, dai.balanceOf(address(this)));
+				_stablecoinTransfer(treasury, dai.balanceOf(address(this)));
 			} else {
 			// Grant Zoo
 				winnerRewards.zooRewards += zooFunctions.getLeagueZooRewards(winnerRewards.league);
@@ -1103,7 +1103,7 @@ contract NftBattleArena
 		require(vault.redeem(((income1 + income2) / 25)) == 0);           // Withdraws dai from vault for yTokens, minus staker %.
 
 		uint256 daiReward = dai.balanceOf(address(this));
-		dai.transfer(treasury, daiReward);                                       // Transfers treasury part. 4 / 100 == 4%
+		_stablecoinTransfer(treasury, daiReward);                                       // Transfers treasury part. 4 / 100 == 4%
 
 		winnerRewards.yTokensSaldo += int256(((income1 + income2) * 96 / 100));
 		loserRewards.yTokensSaldo -= int256(income2);
@@ -1303,6 +1303,12 @@ contract NftBattleArena
 
 		lpZoo.transfer(beneficiary, zooWithdraw);                                           // Transfers lp to beneficiary.
 		lpZoo.transfer(treasury, zooAmount * 5 / 1000);
+	}
+
+	function _stablecoinTransfer(address who, uint256 value) internal
+	{
+		if (value > 0)
+			dai.transfer(who, value);
 	}
 
 	/// @notice Function to view current stage in battle epoch.

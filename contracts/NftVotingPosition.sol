@@ -124,6 +124,7 @@ contract NftVotingPosition is ERC721, Ownable
 
 	function addZooToPosition(uint256 votingPositionId, uint256 amount) payable feePaid(msg.value) external returns (uint256 votes) 
 	{
+		require(amount != 0, "Zero-vote has not allowed");
 		require(nftBattleArena.getCurrentStage() == Stage.FourthStage, "Wrong stage!");
 		lpZoo.transferFrom(msg.sender, address(nftBattleArena), amount);                        // Transfers ZOO to arena contract for vote.
 		return nftBattleArena.addZooToVoting(votingPositionId, msg.sender, amount);
