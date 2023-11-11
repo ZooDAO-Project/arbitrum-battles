@@ -1,68 +1,128 @@
-# ZooDAO 
-## Nft battles arena
+![](https://i.ibb.co/ZGh8c9T/1500x500.jpg)
 
-#### This repository contains system of contracts associated with Nft battles of the ZooDAO project.
+![License](https://img.shields.io/badge/License-MIT-blue?logo=zoodao) ![License](https://img.shields.io/badge/Solidity-0.8.17-green?logo=zoodao)
 
-| contract | description |
-| --- | --- |
-| NftBattleArena| main battle system logics|
-| NftStakingPosition| staking position nft minter and user functions|
-| NftVotingPosition| voter position nft minter and user functions|
-| BaseZooFunctions | external battles logics|
-| ZooGovernance | connects battles with Functions|
-| ListingList | ve-Model zoo contract. List of eligible projects for battles |
-| xZoo | Contract for staking Zoo tokens for % of yield generated in battles. |
-| Jackpot | Сontract for apply for a lottery for % of yield generated in battles. |
+# [ZooDAO - NFT battles arena](https://zoodao.com/)
+ This repository contains system of contracts associated with NFT battles of the ZooDAO project. 
+ ## Table of Contents
+
+* [About](#about)
+* [NFT Battles](#nft-battles)
+* [Technology](#technology)
+* [Testing](#testing)
+* [Deploy](#deploy)
+* [Compilet](#compilet)
+* [Documentation](#documentation)
+* [License](#license)
+## About
+We set out to answer the question what if we could generate additional returns from the NFTs we already own?
+ZooDAO responds directly to this question, by creating an ecosystem in which NFTs may be used to work for users, generating returns on existing investments passively.
+### Greater purposes for NFTs
+
+* Cross-community interaction in a gamified environment
+* A user-friendly on-ramp to DeFi for an ever growing community of 205'000 NFT holders
+* The capability to leverage digital assets to earn additional income without the possibility of liquidation or loss
 
 
+## NFT Battles
 ##### NftBattleArena is time-based cyclic contracts with five stages in each epoch.
+
+
 * 1st stage: Staking and unstaking of nfts, claiming rewards from previous epochs.
-* 2nd stage: Voting for nft with dai.
+* 2nd stage: Voting for nft with stablecoins
 * 3rd stage: Pairing of nft for battle.
-* 4th stage: Boosting\voting for nft with Zoo.
+* 4th stage: Boosting\voting for nft with LPs, which contain Zoo
 * 5th stage: Random request and Choosing winners in pair.
 
-#### ListingList contract associated with ve-model and list of eligible projects for battles.
-* This contract contains logics about adding and removing from eligible projects, also sets royalte recipient address,
-* And contains voting for ve-model weight functions.
+## Technology
+ZooDAO uses several technologies to provide its services:
 
-##### NftStakingPosition contract associated with staker user functions.
-* Also holds zoo tokens for incentive rewards for staker.
-
-##### NftVotingPosition contract associated with voter user functions.
-* Also holds zoo tokens for incentive rewards for voter.
-
-##### BaseZooFunctions additional contract with some functions for battles. 
-* This contract holds link tokens for chainlinkVRF and implement random for battles with\or without chainlinkVRF.
-
-##### ZooGovernance connects battles with functions contract.
-* Allows to connect battles with new functions contract to change some play rules if needed.
-
-##### xZoo Contract for staking Zoo tokens for % of yield generated in battles.
-
-##### JackPot contract for apply for a lottery for % of yield generated in battles.
-* Voting and staking positions in battles can be staked to apply for a lottery.
+- **Aragon**: ZooDAO integrates Aragon to provide true autonomy and fairness to the DAO.
+- **DeFi protocols**: ZooDAO builds on DeFi protocols to deliver users organic yield, which underpins their rewards.
 
 
-##### Dai from votes are staked for % in Yearn, and rewards for winners are generated from this income.
+## Deploy
+Deploying with Brownie involves a few steps:
+
+**Install Brownie**: You can install Brownie using pip, which is Python's package manager. You can do this by typing the following in your terminal:
+```bash
+pip install eth-brownie
+```
+Here are some steps to deploy ZooDAO based on the information available:
+
+**Running Scripts**: The `brownie run <script> [function]` command is used to execute a script from the command line in the Brownie Python development environment. Here's a breakdown of the command:
+```bash
+brownie run <script> [function]
+```
+## Testing
+To run a test script in Brownie, you can use the `brownie test` command followed by the path to your test script. For example:
+
+```bash
+brownie test tests/test_simple_incentive_rewards.py
+```
+
+If you want to run a specific test function within a test script, you can do so by appending `::` followed by the function name to the script path. For example:
+
+```bash
+brownie test tests/test_simple_incentive_rewards.py::test_no_rewards_after_finish_epoch
+```
+
+This will only execute the specified test function within the given test script.
+
+You can also use the `--coverage` flag to see the coverage of your smart contract:
+
+```bash
+brownie test tests/test_simple_incentive_rewards.py --coverage
+```
+
+This command will run the tests and also provide a coverage report.
 
 
-#### Mock folder.
+## Compile
+To compile a ZooDAO project, you can follow these steps:
+
+1. **Install Brownie**: If you haven't installed Brownie yet, you can do so by running the following command in your terminal:
+```bash
+pip install eth-brownie
+```
+
+2. **Clone the ZooDAO repository**: Clone the ZooDAO repository from GitHub to your local machine. You can do this by running the following command in your terminal:
+```bash
+git clone <ZooDAO GitHub repository URL>
+```
+Please replace `<ZooDAO GitHub repository URL>` with the actual URL of the ZooDAO repository.
+
+3. **Navigate to your project directory**: Open a terminal and navigate to the root directory of your ZooDAO project.
+
+4. **Install dependencies**: Install any dependencies that are required for the project. This is typically done by running `npm install` in your project directory.
+
+5. **Compile the project**: The `brownie compile` command is used to compile your smart contracts. Each time the compiler runs, Brownie compares hashes of each contract source against hashes of the existing compiled versions. If a contract has not changed it is not recompiled.
+```bash
+brownie compile
+```
+If you wish to force a recompile of the entire project, you can use `brownie compile --all`.
+```bash
+brownie compile --all
+```
+6. **Review the results**: If the compilation is successful, you should see a message indicating that the compilation was successful. If there are any errors, they will be displayed in the terminal.
+
+
+## Documentation
 | contract | description |
 | --- | --- |
-| DaiTokenMock| dai token fork with changed strings name and symbol |
-| YearnMock | contract imitating yearn dai vault |
-| ZooNftMock | simple nft contract used in tests |
-| ZooTokenMock | simple erc20 token from brownie |
-| ZooTokenMockMintable | erc20 OZ preset |
-| TokenMock |
-| ControllerMock |
+| NftBattleArena| Main battle system logics. Within the ZooDAO ecosystem, NFT Stakers can pitch their own eligible NFT assets against competitors, battling for supremacy and earning rewards in the form of yield and ZOO tokens. NFT Stakers are rewarded for their participation with a percentage of their Voters DeFi yields plus $ZOO incentives in a fully transparent fair play system |
+| NftStakingPosition| Staking position nft minter and user functions. Staking is possible at any time during the 3-day window. ZooDAO incentivises NFT stakers to participate with $ZOO token rewards, that are claimable at the end of the Season These Incentive Rewards are distributed according to      veZOO model.|
+| NftVotingPosition| Voter position nft minter and user functions.To ensure fairness and prevent lastminute sniping, the earlier a user votes, the more valuable their votes. are deposited by voters to Yearn in one ZAP . ZooDAO incentivises NFT voters to participate with ZOO token rewards, that are claimable at the end of the Season. Incentive Rewards are distributed according to       veZOO model. To ensure fairness and prevent lastminute sniping, the earlier a user votes, the more valuable their votes.  is deposited by voters to Moonwell. ZooDAO incentivises NFT voters to participate with ZOO token rewards, that are claimable at the end of the Season. Incentive Rewards are distributed according to       veZOO model.|
+| BaseZooFunctions | External battles logics. Stablecoins staked in STAGE 2 determine the number of votes, and the odds of the competing NFTs of winning the battle Voters can increase their chances of winning by staking ZOO, capped at a 1:1 ratio with their stablecoin votes on any given NFT in STAGE 2.|
+| ZooGovernance | Connects battles with Functions. |
+| ListingList | ve-Model zoo contract. List of eligible projects for battles |
+| veZOO| The mechanism of time locking tokens for a set period. The longer you elect to lock up your tokens, the more weight your tokens may get.|
+|WinnersJackpot|Сontract for apply for a lottery for % of yield generated in battles.|
+| Yield farming |Liquidity mining, is a way to generate passive income while holdings crypto assets. To participate in yield farming, owners of a cryptocurrency or digital asset lend their crypto assets in order to generate returns and rewards. We recommend users participate in yield farming only after understanding the associated benefits and risks.|
 
-#### testnet folder.
-| contract | description |
-| --- | --- |
-| ZooNft| simple single mint erc721 contract. Used to deploy multiple times and random mint in faucet from different contracts.|
-| ZooNftFaucet | outdated nft faucet contract, currently unused |
-| ZooTokenFaucet | Actual faucet for testnet, contains function to mint random nft and give dai\zoo for testnet |
+## License
+
+This project is licensed under the [MIT license](LICENSE).
+
 
 
