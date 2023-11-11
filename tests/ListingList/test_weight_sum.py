@@ -16,3 +16,5 @@ def test_pool_weight_sum_before_and_after_update(accounts, finished_epoch):
 	tx1 = arena.updateInfoAboutStakedNumber(nft)
 
 	assert arena.poolWeight(ZERO_ADDRESS, arena.currentEpoch()) == arena.poolWeight(nft, arena.currentEpoch()) == tx1.return_value
+ 
+def test_pool_weight_sum_in_second(account,)

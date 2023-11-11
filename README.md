@@ -44,57 +44,13 @@ ZooDAO uses several technologies to provide its services:
 ## Deploy
 Deploying with Brownie involves a few steps:
 
-1. **Install Brownie**: You can install Brownie using pip, which is Python's package manager. You can do this by typing the following in your terminal:
+**Install Brownie**: You can install Brownie using pip, which is Python's package manager. You can do this by typing the following in your terminal:
 ```bash
 pip install eth-brownie
 ```
 Here are some steps to deploy ZooDAO based on the information available:
 
-2. **Import necessary modules**: Import the required modules from brownie.
-```python
-import brownie
-from brownie import*
-```
-
-3. **Define your test functions**: Define your test functions with the necessary parameters. These functions will test various aspects of your contract.
-```python
-def test_one_collection_incentive_reward_of_staker(accounts, finished_epoch):
-    ...
-```
-
-4. **Update Information**: Update information about staked number or voting number depending on the function.
-```python
-arena.updateInfoAboutStakedNumber(nft)
-```
-
-5. **Claim Rewards**: Claim incentive rewards using the `claimIncentiveStakerReward` or `claimIncentiveVotingReward` function.
-```python
-tx = staking.claimIncentiveStakerReward(1, accounts[-1], {"from": accounts[0]})
-```
-
-6. **Assert Statements**: Use assert statements to check if the return value is greater than 0 and if the balance of the account is greater than 0.
-```python
-assert tx.return_value > 0
-assert zooToken.balanceOf(accounts[-1]) > 0
-```
-
-7. **Update Epoch**: Update the epoch while the current epoch is less than the end epoch of incentive rewards.
-```python
-while arena.currentEpoch() < arena.endEpochOfIncentiveRewards():
-    chain.sleep(arena.epochDuration() + 1)
-    chain.mine(1)
-    arena.updateEpoch({"from": accounts[0]})
-```
-
-6. **Deploy Your Contracts**: You can deploy your contracts in a controlled environment using the `brownie deploy` command. If you want to deploy to a testnet or a real net, you can use the `--network` flag followed by the name of the network:
-```bash
-brownie deploy --network <name of the network>
-```
-You can also use this flag when testing your contracts:
-```bash
-brownie test --network <name of the network>
-```
-7. **Running Scripts**: The `brownie run <script> [function]` command is used to execute a script from the command line in the Brownie Python development environment. Here's a breakdown of the command:
+**Running Scripts**: The `brownie run <script> [function]` command is used to execute a script from the command line in the Brownie Python development environment. Here's a breakdown of the command:
 ```bash
 brownie run <script> [function]
 ```
@@ -122,7 +78,7 @@ brownie test tests/test_simple_incentive_rewards.py --coverage
 This command will run the tests and also provide a coverage report.
 
 
-## Compilet
+## Compile
 To compile a ZooDAO project, you can follow these steps:
 
 1. **Install Brownie**: If you haven't installed Brownie yet, you can do so by running the following command in your terminal:
