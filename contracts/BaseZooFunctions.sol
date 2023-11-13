@@ -24,7 +24,7 @@ contract BaseZooFunctions is Ownable
 	uint256 public fourthStageDuration = 12 days;    // Duration fourth stage(ZOO).
 	uint256 public fifthStageDuration = 1 days;    // Duration of fifth stage(Winner).
 
-	uint256 public arenaFee; // 275320000000000; // equal to 50 cents at the price of 1 eth at 1800$
+	uint256 public arenaFee; // equal to 50 cents
 
 	uint256 public woodenZooRewards = 21 * 10 ** 18;        // Zoo rewards for Wooden League.
 	uint256 public bronzeZooRewards = 123 * 10 ** 18;        // Zoo rewards for Bronze League
