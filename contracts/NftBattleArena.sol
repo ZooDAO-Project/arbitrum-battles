@@ -46,6 +46,7 @@ contract NftBattleArena
 		uint256 pricePerShareCoef;                                   // pps1*pps2/pps2-pps1
 		uint256 zooRewards;                                          // Reward from arena 50-50 battle
 		uint8 league;                                                // League of NFT
+		bool isWinnerChose;											 // Choose winner was called for that position.
 	}
 
 	/// @notice Struct with info about staker positions.
@@ -1076,12 +1077,14 @@ contract NftBattleArena
 		{
 			if (winner == 0) { // Battle Arena won
 				// Take yield
+				loserRewards.isWinnerChose = true;
 				uint256 income = loserRewards.yTokens - tokensToShares(loserRewards.tokensAtBattleStart);
 				require(vault.redeem(income) == 0);
 				_stablecoinTransfer(treasury, dai.balanceOf(address(this)));
 			} else {
 			// Grant Zoo
 				winnerRewards.zooRewards += zooFunctions.getLeagueZooRewards(winnerRewards.league);
+				winnerRewards.isWinnerChose = true;
 			}
 			return;
 		}
@@ -1118,6 +1121,9 @@ contract NftBattleArena
 
 		winnerRewards1.league = zooFunctions.getNftLeague(winnerRewards1.votes);	// Update league for next epoch.
 		loserRewards1.league = zooFunctions.getNftLeague(loserRewards1.votes);		// Update league for next epoch.
+
+		winnerRewards.isWinnerChose = true;
+		loserRewards.isWinnerChose = true;
 	}
 
 	/// @notice Function for updating position from lastUpdateEpoch, in case there was no battle with position for a while.
@@ -1219,7 +1225,7 @@ contract NftBattleArena
 
 		for (uint256 i = votingPosition.lastEpochOfIncentiveReward; i < lastEpoch; ++i)
 		{
-			if (poolWeight[address(0)][i] != 0 && rewardsForEpoch[stakingPositionId][i].yTokensSaldo != 0) // Check that collection has non-zero weight in veZoo and nft played in battle.
+			if (poolWeight[address(0)][i] != 0 && rewardsForEpoch[stakingPositionId][i].isWinnerChose) // Check that collection has non-zero weight in veZoo and nft played in battle.
 				reward += baseVoterReward * votingPosition.daiVotes * poolWeight[collection][i] / (poolWeight[address(0)][i] * playedVotesByEpoch[i]);
 		}
 
