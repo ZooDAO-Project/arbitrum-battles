@@ -1219,6 +1219,9 @@ contract NftBattleArena
 		updateInfoAboutStakedNumber(collection);                                      // Updates info about collection.
 		
 		uint256 lastEpoch = computeLastEpoch(votingPositionId); // Last epoch
+		if (votingPosition.lastEpochOfIncentiveReward > lastEpoch)
+			return 0;
+
 		if (lastEpoch > endEpochOfIncentiveRewards)
 			lastEpoch = endEpochOfIncentiveRewards;
 		if (pendingVotesEpoch[votingPositionId] != 0 && lastEpoch > pendingVotesEpoch[votingPositionId])
