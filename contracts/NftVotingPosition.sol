@@ -153,7 +153,7 @@ contract NftVotingPosition is ERC721, Ownable
 		IERC20(tokenToReceive).transfer(msg.sender, 985 * amountOut / 1000);	
 
 		// Send lpZoo to beneficiary if needed
-		uint256 lpZooDiff = lpZooBalanceBeforeWithdraw - lpZoo.balanceOf(address(this));
+		uint256 lpZooDiff = lpZoo.balanceOf(address(this)) - lpZooBalanceBeforeWithdraw;
 		if (lpZooDiff != 0) {
 			lpZoo.transfer(beneficiary, lpZooDiff);
 		}
