@@ -367,7 +367,8 @@ contract NftBattleArena
 
 		updateInfo(stakingPositionId);                                                          // Updates staking position params from previous epochs.
 
-		dai.approve(address(vault), type(uint256).max);                                         // Approves Dai for yearn.
+		if (dai.allowance(address(this), address(vault)) < amount)
+			dai.approve(address(vault), type(uint256).max);                                         // Approves Dai for yearn.
 		uint256 yTokensNumber = vault.balanceOf(address(this));
 		require(vault.mint(amount) == 0);                                                       // Deposits dai to yearn vault and get yTokens.
 

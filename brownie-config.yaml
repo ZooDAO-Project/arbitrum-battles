@@ -234,7 +234,7 @@ compiler:
     viaIR: true
     optimizer:
       enabled: true
-      runs: 2400
+      runs: 200
     remappings: 
       - "@chainlink=smartcontractkit/chainlink@1.1.0"
       - "@OpenZeppelin=OpenZeppelin/openzeppelin-contracts@4.8.0"
