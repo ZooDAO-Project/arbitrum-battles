@@ -27,13 +27,13 @@ contract NftBattleArena
 	using Math for uint256;
 	using Math for int256;
 
-	ERC4626 public lpZoo;                                            // lp zoo interface.
-	IERC20Metadata public dai;                                       // stablecoin token interface
+	ERC4626 public immutable lpZoo;                                            // lp zoo interface.
+	IERC20Metadata public immutable dai;                                       // stablecoin token interface
 	IERC20Metadata public zoo;                                       // Zoo token interface
-	VaultAPI public vault;                                           // Vault interface.
+	VaultAPI public immutable vault;                                           // Vault interface.
 	ZooGovernance public zooGovernance;                              // zooGovernance contract.
 	IZooFunctions public zooFunctions;                               // zooFunctions contract.
-	ListingList public veZoo;
+	ListingList public immutable veZoo;
 
 	/// @notice Struct with info about rewards, records for epoch.
 	struct BattleRewardForEpoch
@@ -157,10 +157,10 @@ contract NftBattleArena
 	address public treasury;                                                       // Address of ZooDao insurance pool.
 	// address public team;                                                           // Address of ZooDao team reward pool.
 	address public nftStakingPosition; // address of staking positions contract.
-	address public nftVotingPosition;  // address of voting positions contract.
+	address public immutable nftVotingPosition;  // address of voting positions contract.
 
-	uint256 public baseStakerReward = 133_000 * 10 ** 18 * 15 / 100; // amount of incentives for staker.
-	uint256 public baseVoterReward = 133_000 * 10 ** 18 * 85 / 100; // amount of incentives for voter.
+	uint256 public constant baseStakerReward = 133_000 * 10 ** 18 * 15 / 100; // amount of incentives for staker.
+	uint256 public constant baseVoterReward = 133_000 * 10 ** 18 * 85 / 100; // amount of incentives for voter.
 
 	uint256 public zooVoteRateNominator; // amount of votes for 1 LP with zoo.
 	uint256 public zooVoteRateDenominator;
