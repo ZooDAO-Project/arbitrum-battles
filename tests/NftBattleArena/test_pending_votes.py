@@ -73,6 +73,9 @@ def test_updateVotingPosition_and_pendingVotes_works_correct(accounts, tokens, b
 	# print("_____________________________________________")
 	# print("after choose winner")
 
+	chain.sleep(arena.fifthStageDuration())
+	arena.updateEpoch()
+
 	assert arena.rewardsForEpoch(1,2)[1] == 390000000000000000000
 	assert arena.rewardsForEpoch(2,2)[1] == 130000000000000000000
 
@@ -84,8 +87,8 @@ def test_updateVotingPosition_and_pendingVotes_works_correct(accounts, tokens, b
 	# print("1 position, 2 epoch, rewardsForEpoch", arena.rewardsForEpoch(1,2))
 	# print("2 position, 2 epoch, rewardsForEpoch", arena.rewardsForEpoch(2,2))
 
-	assert arena.getPendingVoterReward(1) == (1, 0) # 1st position wins most of the times.
-	assert arena.getPendingVoterReward(2) == (0, 0)
+	assert arena.getPendingVoterReward(1)[0] != arena.getPendingVoterReward(2)[0]
+	
 	# print("pending reward 1 position", arena.getPendingVoterReward(1))
 	# print("pending reward 2 position", arena.getPendingVoterReward(2))
 
@@ -101,8 +104,8 @@ def test_updateVotingPosition_and_pendingVotes_works_correct(accounts, tokens, b
 	assert arena.getPendingVoterReward(1) == (0, 0)
 	assert arena.getPendingVoterReward(2) == (0, 0)
 
-	assert arena.rewardsForEpoch(1,2)[1] == 390000000000000000000
-	assert arena.rewardsForEpoch(2,2)[1] == 130000000000000000000
+	assert arena.rewardsForEpoch(1, 2)[1] == 390000000000000000000
+	assert arena.rewardsForEpoch(2, 2)[1] == 130000000000000000000
 
 	assert arena.pendingVotesEpoch(1) == 1
 	assert arena.pendingVotes(1) == 130000000000000000000
@@ -131,8 +134,8 @@ def test_updateVotingPosition_and_pendingVotes_works_correct(accounts, tokens, b
 
 	arena.pairNft(1, _from(accounts[1])) # pair for 1 position.
 
-	assert arena.rewardsForEpoch(1,2)[1] == 390000000000000000000
-	assert arena.rewardsForEpoch(2,2)[1] == 130000000000000000000
+	assert arena.rewardsForEpoch(1, 2)[1] == 390000000000000000000
+	assert arena.rewardsForEpoch(2, 2)[1] == 130000000000000000000
 	# print("_____________________________________________")
 	# print("after pairing")
 

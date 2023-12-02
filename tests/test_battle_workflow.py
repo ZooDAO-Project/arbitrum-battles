@@ -54,6 +54,9 @@ def test_battles_workflow_basic(accounts, tokens, battles):
 	arena.requestRandom()
 	arena.chooseWinnerInPair(0, _from(accounts[1])) # pair index, from
 
+	chain.sleep(arena.fifthStageDuration())
+	arena.updateEpoch()
+
 	assert arena.currentEpoch() == 2
 	assert arena.getCurrentStage() == 0
 
@@ -102,6 +105,9 @@ def test_battles_workflow_advanced(accounts, tokens, battles):
 
 	arena.requestRandom()
 	arena.chooseWinnerInPair(0, _from(accounts[1])) # pair index, from
+
+	chain.sleep(arena.fifthStageDuration())
+	arena.updateEpoch()
 
 	assert arena.currentEpoch() == 2
 	assert arena.getCurrentStage() == 0
@@ -152,6 +158,9 @@ def test_battles_workflow_advanced(accounts, tokens, battles):
 	arena.requestRandom()
 	arena.chooseWinnerInPair(0, _from(accounts[1])) # pair index, from
 
+	chain.sleep(arena.fifthStageDuration())
+	arena.updateEpoch()
+
 	assert arena.currentEpoch() == 3
 	assert arena.getCurrentStage() == 0
 
@@ -200,6 +209,9 @@ def test_battles_workflow_complex_multi_pairing(accounts, tokens, battles):
 
 	arena.requestRandom()
 	arena.chooseWinnerInPair(0, _from(accounts[1])) # pair index, from
+
+	chain.sleep(arena.fifthStageDuration())
+	arena.updateEpoch()
 
 	assert arena.currentEpoch() == 2
 	assert arena.getCurrentStage() == 0
@@ -294,6 +306,9 @@ def test_battles_workflow_complex_multi_pairing(accounts, tokens, battles):
 	arena.requestRandom()
 	for i in range(0, arena.getNftPairLength('2')): # epoch
 		arena.chooseWinnerInPair(i, _from(accounts[1]))
+
+	chain.sleep(arena.fifthStageDuration())
+	arena.updateEpoch()
 
 	assert arena.currentEpoch() == 3
 	assert arena.getCurrentStage() == 0

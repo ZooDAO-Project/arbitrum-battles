@@ -82,7 +82,7 @@ def test_increasing_of_number_of_played_pairs_in_epoch(accounts, fifth_stage):
 	(vault, functions, governance, staking, voting, arena, listing) = fifth_stage[1]
 
 	currentEpoch = arena.currentEpoch()
-	assert arena.numberOfPlayedPairsInEpoch(currentEpoch) == 0
+	assert arena.numberOfPlayedPairsInEpoch() == 0
 
 	pairIndex = 0
 	arena.requestRandom()
@@ -90,7 +90,7 @@ def test_increasing_of_number_of_played_pairs_in_epoch(accounts, fifth_stage):
 
 	pair = arena.pairsInEpoch(currentEpoch, pairIndex)
 
-	assert arena.numberOfPlayedPairsInEpoch(currentEpoch) == 1
+	assert arena.numberOfPlayedPairsInEpoch() == 1
 
 
 def test_rewards_calculations(accounts, fifth_stage):
@@ -184,6 +184,9 @@ def test_ending_of_epoch_if_all_pairs_played(accounts, fifth_stage):
 	arena.requestRandom()
 	for pairIndex in range(4):
 		arena.chooseWinnerInPair(pairIndex)
+
+	chain.sleep(arena.fifthStageDuration() + 1)
+	tx1 = arena.updateEpoch()
 
 	assert arena.currentEpoch() == 2
 	assert arena.getCurrentStage() == 0

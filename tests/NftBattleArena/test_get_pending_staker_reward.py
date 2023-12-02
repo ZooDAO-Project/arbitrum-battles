@@ -92,6 +92,9 @@ def test_reward_calculation_after_choosing_winner(accounts, fifth_stage):
 
 	play_all_pairs(arena)
 
+	chain.sleep(arena.fifthStageDuration())
+	arena.updateEpoch()
+
 
 	# Update pair after playing a game
 	pair = arena.pairsInEpoch(current_epoch, pair_index)
