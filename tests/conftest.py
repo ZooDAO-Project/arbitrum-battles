@@ -335,5 +335,7 @@ def finished_epoch(fifth_stage):
 		arena.chooseWinnerInPair(i)
 
 	chain.mine(1)
+	chain.sleep(arena.fifthStageDuration())
+	arena.updateEpoch()
 
 	return ((zooToken, daiToken, linkToken, nft), (vault, functions, governance, staking, voting, arena, listing))

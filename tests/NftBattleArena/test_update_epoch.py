@@ -25,6 +25,11 @@ def test_stage_requirement(accounts, battles, tokens):
 
 	chain.sleep(arena.fourthStageDuration())
 
+	with brownie.reverts(""):
+		arena.updateEpoch()
+
+	chain.sleep(arena.fifthStageDuration())
+
 	tx = arena.updateEpoch()
 	assert tx.status == 1
 
@@ -37,14 +42,15 @@ def test_all_pairs_played_requirement(accounts, fifth_stage):
 	arena.requestRandom()
 	
 	# Reverted until all pairs finished battles
-	for i in range(arena.getNftPairLength(epoch) - 1):
+	for i in range(arena.getNftPairLength(epoch)):
 		with brownie.reverts():
 			arena.updateEpoch()
 
 		arena.chooseWinnerInPair(i)
 
-	# After last pair played epoch should be updated
-	arena.chooseWinnerInPair(3)
+
+	chain.sleep(arena.fifthStageDuration())
+	arena.updateEpoch()
 
 	assert arena.currentEpoch() == epoch + 1
 

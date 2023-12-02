@@ -35,6 +35,7 @@ def test_only_arena_modifier(accounts, battles, tokens):
 	chain.sleep(arena.secondStageDuration())
 	chain.sleep(arena.thirdStageDuration())
 	chain.sleep(arena.fourthStageDuration())
+	chain.sleep(arena.fifthStageDuration())
 
 	# Update epoch uses resetRandom()
 	tx = arena.updateEpoch()

@@ -167,7 +167,7 @@ def test_finished_epoch(accounts, finished_epoch):
 
 		assert pair['playedInEpoch']
 
-	assert arena.numberOfPlayedPairsInEpoch(1) == 4
+	assert arena.numberOfPlayedPairsInEpoch() == 0
 	
 
 # def test_second_stage_advanced(accounts, second_stage_advanced):

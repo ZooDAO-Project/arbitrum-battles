@@ -34,6 +34,9 @@ def test_get_pending_voter_reward(accounts, tokens, battles):
 	arena.requestRandom()
 	arena.chooseWinnerInPair(0, _from(accounts[1])) # pair index, from
 
+	chain.sleep(arena.fifthStageDuration())
+	arena.updateEpoch()
+
 	assert arena.getPendingVoterReward(1)[0] or arena.getPendingVoterReward(2)[0] == 1 or 2
 
 	voting.claimRewardFromVoting(1, accounts[1], _from(accounts[1]))

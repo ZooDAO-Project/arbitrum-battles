@@ -172,8 +172,8 @@ contract NftBattleArena
 	// epoch number => index => NftPair struct.
 	mapping (uint256 => NftPair[]) public pairsInEpoch;                            // Records info of pair in struct per battle epoch.
 
-	// epoch number => number of played pairs in epoch.
-	mapping (uint256 => uint256) public numberOfPlayedPairsInEpoch;                // Records amount of pairs with chosen winner in current epoch.
+	// number of played pairs in epoch.
+	uint256 public numberOfPlayedPairsInEpoch = 0;                // Records amount of pairs with chosen winner in current epoch.
 
 	// position id => StakerPosition struct.
 	mapping (uint256 => StakerPosition) public stakingPositionsValues;             // Records info about staker position.
@@ -1052,15 +1052,9 @@ contract NftBattleArena
 		(uint256 winner, uint256 loser) = pair.win? (pair.token1, pair.token2) : (pair.token2, pair.token1);
 		_calculateBattleRewards(winner, loser);
 
-		numberOfPlayedPairsInEpoch[currentEpoch]++;                                         // Increments amount of pairs played this epoch.
 		pair.playedInEpoch = true;
 
-		emit ChosenWinner(currentEpoch, pair.token1, pair.token2, pair.win, pairIndex, numberOfPlayedPairsInEpoch[currentEpoch]); // Emits ChosenWinner event.
-
-		if (numberOfPlayedPairsInEpoch[currentEpoch] == pairsInEpoch[currentEpoch].length)
-		{
-			updateEpoch();                                                                  // calls updateEpoch if winner determined in every pair.
-		}
+		emit ChosenWinner(currentEpoch, pair.token1, pair.token2, pair.win, pairIndex, ++numberOfPlayedPairsInEpoch); // Emits ChosenWinner event.
 	}
 
 	/// @dev Contains calculation logic of battle rewards
@@ -1181,7 +1175,7 @@ contract NftBattleArena
 	/// @notice Function to increment epoch.
 	function updateEpoch() public {
 		require(getCurrentStage() == Stage.FifthStage, "Wrong stage!");             // Requires to be at fourth stage.
-		require(block.timestamp >= epochStartDate + epochDuration || numberOfPlayedPairsInEpoch[currentEpoch] == pairsInEpoch[currentEpoch].length); // Requires fourth stage to end, or determine every pair winner.
+		require(block.timestamp >= epochStartDate + epochDuration); // Requires end of fifth stage to end.
 
 		zooFunctions = IZooFunctions(zooGovernance.zooFunctions());                 // Sets ZooFunctions to contract specified in zooGovernance.
 
@@ -1193,6 +1187,7 @@ contract NftBattleArena
 
 		numberOfNftsWithNonZeroVotes += numberOfNftsWithNonZeroVotesPending;
 		numberOfNftsWithNonZeroVotesPending = 0;
+		numberOfPlayedPairsInEpoch = 0;
 
 		zooFunctions.resetRandom();     // Resets random in zoo functions.
 

@@ -69,6 +69,9 @@ def test_pairing_and_chooseWinner_with_id0_in_different_leagues(accounts, tokens
 	tx4 = arena.chooseWinnerInPair(1, _from(accounts[1])) # pair index, from
 	tx5 = arena.chooseWinnerInPair(2, _from(accounts[1])) # pair index, from
 
+	chain.sleep(arena.fifthStageDuration())
+	arena.updateEpoch()
+
 	event3 = tx3.events["ChosenWinner"]
 	event4 = tx4.events["ChosenWinner"]
 	event5 = tx5.events["ChosenWinner"]
@@ -194,6 +197,9 @@ def test_pairing_and_chooseWinner_in_different_leagues(accounts, tokens, battles
 	tx3 = arena.chooseWinnerInPair(0, _from(accounts[1])) # pair index, from
 	tx4 = arena.chooseWinnerInPair(1, _from(accounts[1])) # pair index, from
 	tx5 = arena.chooseWinnerInPair(2, _from(accounts[1])) # pair index, from
+
+	chain.sleep(arena.fifthStageDuration())
+	arena.updateEpoch()
 
 	event3 = tx3.events["ChosenWinner"]
 	event4 = tx4.events["ChosenWinner"]

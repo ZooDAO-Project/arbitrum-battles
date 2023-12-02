@@ -67,6 +67,8 @@ def test_incentive_reward_in_new_epoch(accounts, finished_epoch: tuple[tuple, tu
 		arena.requestRandom()
 		vault.increaseMockBalance() # Generate yield.
 		arena.chooseWinnerInPair(0)
+		chain.sleep(arena.fifthStageDuration())
+		arena.updateEpoch()
 		lastEpochOfIncentiveReward = arena.votingPositionsValues(1)["lastEpochOfIncentiveReward"]
 		tx2 = voting.claimIncentiveVoterReward(1, accounts[-1], {"from": accounts[0]})
 		assert arena.votingPositionsValues(1)["lastEpochOfIncentiveReward"] > lastEpochOfIncentiveReward
@@ -102,7 +104,9 @@ def test_fifty_fifty_case(accounts, finished_epoch: tuple[tuple, tuple]):
 	vault.increaseMockBalance() # Generate yield.
 	for i in range(arena.getNftPairLength(arena.currentEpoch())):
 		arena.chooseWinnerInPair(i)
-	
+
+	chain.sleep(arena.fifthStageDuration())
+	arena.updateEpoch()	
 	# Check that all voting positions (including position, which battled against ZooDAO) have non-zero incentive rewards.
 	for i in range(1, arena.numberOfNftsWithNonZeroVotes()):
 		tx2 = voting.claimIncentiveVoterReward(i, accounts[-1], {"from": voting.ownerOf(i)})
