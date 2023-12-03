@@ -1287,7 +1287,7 @@ contract NftBattleArena
 	function updateInfoAboutStakedNumber(address collection) public returns (uint256 actualWeight)
 	{
 		uint256 lastUpdateEpoch = lastUpdatesOfStakedNumbers[collection];
-		if (lastUpdateEpoch == currentEpoch)
+		if (lastUpdateEpoch == currentEpoch || collection == address(0))
 			return poolWeight[collection][currentEpoch];
 
 		uint256 i = lastUpdateEpoch + 1;

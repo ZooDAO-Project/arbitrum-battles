@@ -33,3 +33,15 @@ def test_weight_and_number_update(accounts, finished_epoch):
 
 	assert arena.poolWeight(ZERO_ADDRESS, 3) == arena.poolWeight(nft, 3) == tx1.return_value == tx2.return_value
 	assert arena.numberOfStakedNftsInCollection(3, nft) == 9
+
+def test_update_for_zero_collection(accounts, finished_epoch):
+	(vault, functions, governance, staking, voting, arena, listing) = finished_epoch[1]
+
+	direct_value = arena.poolWeight(ZERO_ADDRESS, arena.currentEpoch())
+	static_call_value = arena.updateInfoAboutStakedNumber.call(ZERO_ADDRESS)
+
+	assert direct_value == static_call_value
+
+	tx1 = arena.updateInfoAboutStakedNumber(ZERO_ADDRESS)
+
+	assert tx1.return_value == direct_value == arena.poolWeight(ZERO_ADDRESS, arena.currentEpoch())
