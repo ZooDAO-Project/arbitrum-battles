@@ -38,7 +38,7 @@ contract NftBattleArena
 	/// @notice Struct with info about rewards, records for epoch.
 	struct BattleRewardForEpoch
 	{
-		int256 yTokensSaldo;                                         // Saldo from deposit in yearn in yTokens.
+		uint256 yTokensSaldo;                                         // Saldo from deposit in yearn in yTokens.
 		uint256 votes;                                               // Total amount of votes for nft in this battle in this epoch.
 		uint256 yTokens;                                             // Amount of yTokens.
 		uint256 tokensAtBattleStart;                                 // Amount of yTokens at battle start.
@@ -884,17 +884,11 @@ contract NftBattleArena
 				votes += pendingVotes;
 			}
 
-			int256 saldo = rewardsForEpoch[stakingPositionId][i].yTokensSaldo;         // Gets saldo from staker position for every epoch in range.
-
-			if (saldo > 0)
-			{
-				yTokens += uint256(saldo) * votes / rewardsForEpoch[stakingPositionId][i].votes;         // Calculates yTokens amount for voter.
-			}
-
 			BattleRewardForEpoch storage leagueRewards = rewardsForEpoch[stakingPositionId][i];
 
-			if (rewardsForEpoch[stakingPositionId][i].votes > 0)
+			if (rewardsForEpoch[stakingPositionId][i].votes > 0) // Voting position participated in battle.
 			{
+				yTokens += rewardsForEpoch[stakingPositionId][i].yTokensSaldo * votes / rewardsForEpoch[stakingPositionId][i].votes;         // Calculates yTokens amount for voter.
 				zooRewards += leagueRewards.zooRewards * votes / rewardsForEpoch[stakingPositionId][i].votes;         // Calculates yTokens amount for voter.
 			}
 		}
@@ -933,12 +927,7 @@ contract NftBattleArena
 
 		for (uint256 i = stakerPosition.lastRewardedEpoch; i < end; ++i)
 		{
-			int256 saldo = rewardsForEpoch[stakingPositionId][i].yTokensSaldo;                // Get saldo from staker position.
-
-			if (saldo > 0)
-			{
-				stakerReward += uint256(saldo / 96);                                          // Calculates reward for staker: 1% = 1 / 96
-			}
+			stakerReward += rewardsForEpoch[stakingPositionId][i].yTokensSaldo / 96;                                          // Calculates reward for staker: 1% = 1 / 96
 		}
 	}
 
@@ -1103,8 +1092,7 @@ contract NftBattleArena
 		uint256 daiReward = dai.balanceOf(address(this));
 		_stablecoinTransfer(treasury, daiReward);                                       // Transfers treasury part. 4 / 100 == 4%
 
-		winnerRewards.yTokensSaldo += int256(((income1 + income2) * 96 / 100));
-		loserRewards.yTokensSaldo -= int256(income2);
+		winnerRewards.yTokensSaldo += (income1 + income2) * 96 / 100;
 
 		winnerRewards1.yTokens = winnerRewards.yTokens + income2 - ((income1 + income2) / 25);
 		loserRewards1.yTokens = loserRewards.yTokens - income2; // Withdraw reward amount.
