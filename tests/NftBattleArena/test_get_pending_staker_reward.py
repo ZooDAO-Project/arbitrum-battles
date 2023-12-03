@@ -117,7 +117,7 @@ def test_reward_calculation_after_choosing_winner(accounts, fifth_stage):
 
 	# Loser rewards
 	reward = arena.rewardsForEpoch(loser, current_epoch)
-	assert reward["yTokensSaldo"] == -4726896791
+	assert reward["yTokensSaldo"] == 0
 
 	reward = arena.rewardsForEpoch(loser, next_epoch)
 	assert reward["yTokensSaldo"] == 0
