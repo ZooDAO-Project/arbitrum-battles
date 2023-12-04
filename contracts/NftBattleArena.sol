@@ -666,9 +666,9 @@ contract NftBattleArena
 	{
 		VotingPosition storage votingPosition = votingPositionsValues[votingPositionId];
 
-		uint256 yTokens = _calculateVotersYTokensExcludingRewards(votingPositionId);
+		uint256 yTokens = _calculateVotersYTokensExcludingRewards(votingPositionId); // Revert changes in WP-H12, becasuse .
 
-		if (toSwap == false)                                         // If false, withdraws tokens from vault for regular liquidate.
+		if (toSwap == false)                                         // If false, withdraws tokens from vault for regular liquidate _calculateVotersYTokensExcludingRewards has already called in witdrawDai function.
 		{
 			require(vault.redeem(yTokens) == 0);
 			_stablecoinTransfer(beneficiary, dai.balanceOf(address(this))); // True when called from swapVotes, ignores withdrawal to re-assign them for another position.
@@ -1052,61 +1052,60 @@ contract NftBattleArena
 	function _calculateBattleRewards(uint256 winner, uint256 loser) internal
 	{
 		BattleRewardForEpoch storage winnerRewards = rewardsForEpoch[winner][currentEpoch];
-		BattleRewardForEpoch storage loserRewards = rewardsForEpoch[loser][currentEpoch];
 
-		BattleRewardForEpoch storage winnerRewards1 = rewardsForEpoch[winner][currentEpoch + 1];
-		BattleRewardForEpoch storage loserRewards1 = rewardsForEpoch[loser][currentEpoch + 1];
-
-		uint256 income2 = loserRewards.yTokens - tokensToShares(loserRewards.tokensAtBattleStart);
+		uint256 income2;
+		uint256 currentPps = vault.exchangeRateCurrent();
 
 		if (winner == 0 || loser == 0) // arena 50-50 case
 		{
-			if (winner == 0) { // Battle Arena won
+			if (winner == 0) // Battle Arena won
+			{
 				// Take yield
-				loserRewards.isWinnerChose = true;
+				income2 = _processBattleRecords(loser);
 				require(vault.redeem(income2) == 0);
 				_stablecoinTransfer(treasury, dai.balanceOf(address(this)));
-			} else {
-			// Grant Zoo
+			}
+			else
+			{
+				// Grant Zoo
 				winnerRewards.zooRewards += zooFunctions.getLeagueZooRewards(winnerRewards.league);
 				winnerRewards.isWinnerChose = true;
 			}
 			return;
 		}
 
-		// Skip if price per share didn't change since pairing
-		uint256 currentPps = vault.exchangeRateCurrent();
-		if (winnerRewards.pricePerShareAtBattleStart == currentPps)
-		{
-			return;
-		}
+		uint256 income1 = _processBattleRecords(winner);
 
-		winnerRewards.pricePerShareCoef = currentPps * winnerRewards.pricePerShareAtBattleStart / (currentPps - winnerRewards.pricePerShareAtBattleStart);
-		loserRewards.pricePerShareCoef = winnerRewards.pricePerShareCoef;
+		if (income1 == 0)
+			return; // Skip all if price per share didn't change since pairing
 
-		// Income = yTokens at battle end - yTokens at battle start
-		uint256 income1 = winnerRewards.yTokens - tokensToShares(winnerRewards.tokensAtBattleStart);
-
+		income2 = _processBattleRecords(loser);
 		require(vault.redeem(((income1 + income2) / 25)) == 0);           // Withdraws stablecoins from vault for yTokens, minus staker %.
 
 		uint256 daiReward = dai.balanceOf(address(this));
 		_stablecoinTransfer(treasury, daiReward);                                       // Transfers treasury part. 4 / 100 == 4%
 
 		winnerRewards.yTokensSaldo += (income1 + income2) * 96 / 100;
+	}
 
-		winnerRewards1.yTokens = winnerRewards.yTokens - income1;// Minus reward value.
-		loserRewards1.yTokens = loserRewards.yTokens - income2; // Withdraw reward amount.
+	function _processBattleRecords(uint256 stakingPositionId) internal returns (uint256 income)
+	{
+		BattleRewardForEpoch storage currentEpochRecord = rewardsForEpoch[stakingPositionId][currentEpoch];
+		BattleRewardForEpoch storage nextEpochRecord = rewardsForEpoch[stakingPositionId][currentEpoch + 1];
 
-		stakingPositionsValues[winner].lastUpdateEpoch = currentEpoch + 1;          // Update lastUpdateEpoch to next epoch.
-		stakingPositionsValues[loser].lastUpdateEpoch = currentEpoch + 1;           // Update lastUpdateEpoch to next epoch.
-		winnerRewards1.votes += winnerRewards.votes;                                 // Update votes for next epoch.
-		loserRewards1.votes += loserRewards.votes;                                   // Update votes for next epoch.
+		uint256 currentPps = vault.exchangeRateCurrent();
+		if (currentEpochRecord.pricePerShareAtBattleStart == currentPps)
+			return 0; // Skip all and return 0 if price per share didn't change since pairing
+		else
+			income = currentEpochRecord.yTokens - tokensToShares(currentEpochRecord.tokensAtBattleStart);
 
-		winnerRewards1.league = zooFunctions.getNftLeague(winnerRewards1.votes);	// Update league for next epoch.
-		loserRewards1.league = zooFunctions.getNftLeague(loserRewards1.votes);		// Update league for next epoch.
+		currentEpochRecord.pricePerShareCoef = currentPps * currentEpochRecord.pricePerShareAtBattleStart / (currentPps - currentEpochRecord.pricePerShareAtBattleStart);
+		nextEpochRecord.yTokens = currentEpochRecord.yTokens - income; // Deduct reward value.
+		stakingPositionsValues[stakingPositionId].lastUpdateEpoch = currentEpoch + 1;           // Update lastUpdateEpoch to next epoch.
+		nextEpochRecord.votes += currentEpochRecord.votes;                                   			// Update votes for next epoch.
+		nextEpochRecord.league = zooFunctions.getNftLeague(nextEpochRecord.votes);	// Update league for next epoch.
 
-		winnerRewards.isWinnerChose = true;
-		loserRewards.isWinnerChose = true;
+		currentEpochRecord.isWinnerChose = true;
 	}
 
 	/// @notice Function for updating position from lastUpdateEpoch, in case there was no battle with position for a while.
