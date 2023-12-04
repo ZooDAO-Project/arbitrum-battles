@@ -49,6 +49,8 @@ def test_numberOfNftsWithNonZeroVotes(accounts, tokens, battles):
 	daiToken.approve(voting, daiAmountToVote, _from(accounts[1]))
 	voting.createNewVotingPosition(1, daiAmountToVote, True, _from(accounts[1]))
 
+	assert arena.votingPositionsValues(1)["startEpoch"] == arena.currentEpoch()
+
 	daiAmountToVote = 10e18
 	daiToken.approve(voting, daiAmountToVote, _from(accounts[1]))
 	voting.createNewVotingPosition(2, daiAmountToVote, True, _from(accounts[1]))
