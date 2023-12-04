@@ -666,7 +666,7 @@ contract NftBattleArena
 	{
 		VotingPosition storage votingPosition = votingPositionsValues[votingPositionId];
 
-		uint256 yTokens = votingPosition.yTokensNumber;
+		uint256 yTokens = _calculateVotersYTokensExcludingRewards(votingPositionId);
 
 		if (toSwap == false)                                         // If false, withdraws tokens from vault for regular liquidate.
 		{
@@ -827,7 +827,7 @@ contract NftBattleArena
 		daiReward = dai.balanceOf(address(this));
 
 		_stablecoinTransfer(beneficiary, daiReward);                             // Transfers voter part of reward.
-
+		/*
 		BattleRewardForEpoch storage battleReward = rewardsForEpoch[votingPosition.stakingPositionId][currentEpoch];
 		if (battleReward.yTokens >= yTokenReward)
 		{
@@ -836,7 +836,7 @@ contract NftBattleArena
 		else
 		{
 			battleReward.yTokens = 0;
-		}
+		}*/
 
 		zoo.transfer(beneficiary, zooRewards);
 
@@ -1057,13 +1057,14 @@ contract NftBattleArena
 		BattleRewardForEpoch storage winnerRewards1 = rewardsForEpoch[winner][currentEpoch + 1];
 		BattleRewardForEpoch storage loserRewards1 = rewardsForEpoch[loser][currentEpoch + 1];
 
+		uint256 income2 = loserRewards.yTokens - tokensToShares(loserRewards.tokensAtBattleStart);
+
 		if (winner == 0 || loser == 0) // arena 50-50 case
 		{
 			if (winner == 0) { // Battle Arena won
 				// Take yield
 				loserRewards.isWinnerChose = true;
-				uint256 income = loserRewards.yTokens - tokensToShares(loserRewards.tokensAtBattleStart);
-				require(vault.redeem(income) == 0);
+				require(vault.redeem(income2) == 0);
 				_stablecoinTransfer(treasury, dai.balanceOf(address(this)));
 			} else {
 			// Grant Zoo
@@ -1085,16 +1086,15 @@ contract NftBattleArena
 
 		// Income = yTokens at battle end - yTokens at battle start
 		uint256 income1 = winnerRewards.yTokens - tokensToShares(winnerRewards.tokensAtBattleStart);
-		uint256 income2 = loserRewards.yTokens - tokensToShares(loserRewards.tokensAtBattleStart);
 
-		require(vault.redeem(((income1 + income2) / 25)) == 0);           // Withdraws dai from vault for yTokens, minus staker %.
+		require(vault.redeem(((income1 + income2) / 25)) == 0);           // Withdraws stablecoins from vault for yTokens, minus staker %.
 
 		uint256 daiReward = dai.balanceOf(address(this));
 		_stablecoinTransfer(treasury, daiReward);                                       // Transfers treasury part. 4 / 100 == 4%
 
 		winnerRewards.yTokensSaldo += (income1 + income2) * 96 / 100;
 
-		winnerRewards1.yTokens = winnerRewards.yTokens + income2 - ((income1 + income2) / 25);
+		winnerRewards1.yTokens = winnerRewards.yTokens - income1;// Minus reward value.
 		loserRewards1.yTokens = loserRewards.yTokens - income2; // Withdraw reward amount.
 
 		stakingPositionsValues[winner].lastUpdateEpoch = currentEpoch + 1;          // Update lastUpdateEpoch to next epoch.
