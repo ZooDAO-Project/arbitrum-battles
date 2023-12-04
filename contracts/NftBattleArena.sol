@@ -544,7 +544,7 @@ contract NftBattleArena
 
 		votingPosition.yTokensNumber = _calculateVotersYTokensExcludingRewards(votingPositionId) + _yTokens;// Adds yTokens to voting position.
 		votingPosition.daiInvested += amount;                                         // Adds amount of dai to voting position.
-		votingPosition.startEpoch = epoch;
+		votingPosition.lastEpochYTokensWereDeductedForRewards = epoch;
 
 		updateInfo(stakingPositionId);
 		BattleRewardForEpoch storage battleReward = rewardsForEpoch[stakingPositionId][epoch];
