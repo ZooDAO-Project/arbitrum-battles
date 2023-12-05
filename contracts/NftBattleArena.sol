@@ -154,9 +154,9 @@ contract NftBattleArena
 	uint256 public numberOfStakingPositions = 1;
 	uint256 public numberOfVotingPositions = 1;
 
-	address public treasury;                                                       // Address of ZooDao insurance pool.
+	address public immutable treasury;                                                       // Address of ZooDao insurance pool.
 	// address public team;                                                           // Address of ZooDao team reward pool.
-	address public nftStakingPosition; // address of staking positions contract.
+	address public immutable nftStakingPosition; // address of staking positions contract.
 	address public immutable nftVotingPosition;  // address of voting positions contract.
 
 	uint256 public constant baseStakerReward = 133_000 * 10 ** 18 * 15 / 100; // amount of incentives for staker.
@@ -721,7 +721,7 @@ contract NftBattleArena
 	/// @dev Calculates voting position's own yTokens - excludes yTokens that was used for rewards
 	/// @dev yTokens must be substracted even if voting won in battle (they go to the voting's pending reward)
 	/// @param votingPositionId ID of voting to calculate yTokens
-	function _calculateVotersYTokensExcludingRewards(uint256 votingPositionId) internal view returns(uint256 yTokens)
+	function _calculateVotersYTokensExcludingRewards(uint256 votingPositionId) public view returns(uint256 yTokens)
 	{
 		VotingPosition storage votingPosition = votingPositionsValues[votingPositionId];
 		uint256 stakingPositionId = votingPosition.stakingPositionId;
@@ -735,7 +735,7 @@ contract NftBattleArena
 		{
 			if (rewardsForEpoch[stakingPositionId][i].pricePerShareCoef != 0)
 			{
-				yTokens -= votingPosition.daiInvested * 10**18 / rewardsForEpoch[stakingPositionId][i].pricePerShareCoef;
+				yTokens -= rewardsForEpoch[stakingPositionId][i].pricePerShareAtBattleStart * yTokens / rewardsForEpoch[stakingPositionId][i].pricePerShareCoef;
 			}
 		}
 	}
