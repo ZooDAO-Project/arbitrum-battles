@@ -542,9 +542,9 @@ contract NftBattleArena
 			votingPosition.votes += votes;                                                // Adds computed votes amount to totalVotes amount for voting position.
 		}
 
-		votingPosition.yTokensNumber = _calculateVotersYTokensExcludingRewards(votingPositionId) + _yTokens;// Adds yTokens to voting position.
+		_subtractYTokensUserForRewardsFromVotingPosition(votingPositionId);
+		votingPosition.yTokensNumber += _yTokens;// Adds yTokens to voting position.
 		votingPosition.daiInvested += amount;                                         // Adds amount of dai to voting position.
-		votingPosition.lastEpochYTokensWereDeductedForRewards = epoch;
 
 		updateInfo(stakingPositionId);
 		BattleRewardForEpoch storage battleReward = rewardsForEpoch[stakingPositionId][epoch];
@@ -666,9 +666,9 @@ contract NftBattleArena
 	{
 		VotingPosition storage votingPosition = votingPositionsValues[votingPositionId];
 
-		uint256 yTokens = _calculateVotersYTokensExcludingRewards(votingPositionId); // Revert changes in WP-H12, becasuse .
+		uint256 yTokens = votingPosition.yTokensNumber;
 
-		if (toSwap == false)                                         // If false, withdraws tokens from vault for regular liquidate _calculateVotersYTokensExcludingRewards has already called in witdrawDai function.
+		if (toSwap == false)                                         // If false, withdraws tokens from vault
 		{
 			require(vault.redeem(yTokens) == 0);
 			_stablecoinTransfer(beneficiary, dai.balanceOf(address(this))); // True when called from swapVotes, ignores withdrawal to re-assign them for another position.
