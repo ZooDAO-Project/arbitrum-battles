@@ -397,16 +397,17 @@ contract NftBattleArena
 		}
 		else
 		{
-			position.daiVotes = votes;                     // Records computed amount of votes to daiVotes.
-			position.votes = votes;                        // Records computed amount of votes to total votes.
+			position.daiVotes = votes;                     			// Records computed amount of votes to daiVotes.
+			position.votes = votes;                        			// Records computed amount of votes to total votes.
 		}
 
-		position.stakingPositionId = stakingPositionId;    // Records staker position Id voted for.
-		position.yTokensNumber = yTokens;                  // Records amount of yTokens got from yearn vault.
-		position.daiInvested = amount;                     // Records amount of dai invested.
-		position.startEpoch = epoch;                       // Records epoch when position created.
-		position.lastRewardedEpoch = epoch;                // Sets starting point for reward to current epoch.
-		position.lastEpochOfIncentiveReward = epoch;       // Sets starting point for incentive rewards calculation.
+		position.stakingPositionId = stakingPositionId;    			// Records staker position Id voted for.
+		position.yTokensNumber = yTokens;                  			// Records amount of yTokens got from yearn vault.
+		position.daiInvested = amount;                     			// Records amount of dai invested.
+		position.startEpoch = epoch;                       			// Records epoch when position created.
+		position.lastRewardedEpoch = epoch;                			// Sets starting point for reward to current epoch.
+		position.lastEpochYTokensWereDeductedForRewards = epoch;	// Sets starting point for deducted reward to current epoch.
+		position.lastEpochOfIncentiveReward = epoch;       			// Sets starting point for incentive rewards calculation.
 
 		BattleRewardForEpoch storage battleReward = rewardsForEpoch[stakingPositionId][currentEpoch];
 		BattleRewardForEpoch storage battleReward1 = rewardsForEpoch[stakingPositionId][epoch];
