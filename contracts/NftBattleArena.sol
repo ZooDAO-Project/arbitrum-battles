@@ -1055,7 +1055,6 @@ contract NftBattleArena
 		BattleRewardForEpoch storage winnerRewards = rewardsForEpoch[winner][currentEpoch];
 
 		uint256 income2;
-		uint256 currentPps = vault.exchangeRateCurrent();
 
 		if (winner == 0 || loser == 0) // arena 50-50 case
 		{
