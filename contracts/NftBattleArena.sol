@@ -202,6 +202,9 @@ contract NftBattleArena
 	// id voting position => pendingVotesEpoch
 	mapping (uint256 => uint256) public pendingVotesEpoch; // Epoch when voted for next epoch.
 
+	// voting position id => pendingYTokens
+	mapping (uint256 => uint256) public pendingYTokens;
+
 	// id voting position => zooTokenRewardDebt
 	mapping (uint256 => uint256) public zooTokensRewardDebt; // This needs for correct distributing of zoo reward for 50-50 arena battle case.
 
@@ -536,15 +539,16 @@ contract NftBattleArena
 			epoch += 1;
 			pendingVotes[votingPositionId] += votes;
 			pendingVotesEpoch[votingPositionId] = currentEpoch;
+			pendingYTokens[votingPositionId] += _yTokens;
 		}
 		else
 		{
 			votingPosition.daiVotes += votes;                                             // Adds computed daiVotes amount from to voting position.
 			votingPosition.votes += votes;                                                // Adds computed votes amount to totalVotes amount for voting position.
+			votingPosition.yTokensNumber += _yTokens; // Adds yTokens to voting position.
 		}
 
 		_subtractYTokensUserForRewardsFromVotingPosition(votingPositionId);
-		votingPosition.yTokensNumber += _yTokens;// Adds yTokens to voting position.
 		votingPosition.daiInvested += amount;                                         // Adds amount of dai to voting position.
 
 		updateInfo(stakingPositionId);
@@ -1100,7 +1104,7 @@ contract NftBattleArena
 			income = currentEpochRecord.yTokens - tokensToShares(currentEpochRecord.tokensAtBattleStart);
 
 		currentEpochRecord.pricePerShareCoef = currentPps * currentEpochRecord.pricePerShareAtBattleStart / (currentPps - currentEpochRecord.pricePerShareAtBattleStart);
-		nextEpochRecord.yTokens = currentEpochRecord.yTokens - income; // Deduct reward value.
+		nextEpochRecord.yTokens += (currentEpochRecord.yTokens - income); // Deduct reward value.
 		stakingPositionsValues[stakingPositionId].lastUpdateEpoch = currentEpoch + 1;           // Update lastUpdateEpoch to next epoch.
 		nextEpochRecord.votes += currentEpochRecord.votes;                                   			// Update votes for next epoch.
 		nextEpochRecord.league = zooFunctions.getNftLeague(nextEpochRecord.votes);	// Update league for next epoch.
@@ -1154,9 +1158,11 @@ contract NftBattleArena
 		uint256 votes = pendingVotes[votingPositionId];
 		position.daiVotes += votes;
 		position.votes += votes;
+		position.yTokensNumber += pendingYTokens[votingPositionId];
 
 		pendingVotes[votingPositionId] = 0;
 		pendingVotesEpoch[votingPositionId] = 0;
+		pendingYTokens[votingPositionId] = 0;
 	}
 
 	/// @notice Function to increment epoch.
