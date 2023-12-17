@@ -59,7 +59,7 @@ def test_workflow(accounts, tokens, battles, daiNumber, daiAmountToVote2):
 	vault.increaseMockBalance()
 	tx0 = arena.chooseWinnerInPair(0)
 
-	chain.sleep(arena.fourthStageDuration()) # skip 5 stage.
+	chain.sleep(arena.fifthStageDuration()) # skip 5 stage.
 
 	arena.updateEpoch()
 
@@ -90,7 +90,7 @@ def test_workflow(accounts, tokens, battles, daiNumber, daiAmountToVote2):
 	vault.increaseMockBalance()
 	tx1 = arena.chooseWinnerInPair(0)
 
-	chain.sleep(arena.fourthStageDuration()) # skip 5 stage.
+	chain.sleep(arena.fifthStageDuration()) # skip 5 stage.
 
 	arena.updateEpoch()
 

@@ -122,7 +122,7 @@ def test_works_in_stage_1_4_5(accounts, tokens, battles):
 	voting.addDaiToPosition(1, additionalDai, _from(accounts[2])) # 4 stage
 
 	assert arena.votingPositionsValues(1)[1] == 50000000000000000000
-	assert arena.pendingVotesEpoch(1) == 1
+	assert arena.pendingVotesEpoch(1) == 2
 	assert arena.pendingVotes(1) == 26000000000000000000
 	assert arena.rewardsForEpoch(1,1)[1] == 39000000000000000000 # current epoch
 	assert arena.rewardsForEpoch(1,2)[1] == 26000000000000000000 # next epoch
@@ -134,7 +134,7 @@ def test_works_in_stage_1_4_5(accounts, tokens, battles):
 	voting.addDaiToPosition(1, additionalDai, _from(accounts[2])) # 5 stage
 
 	assert arena.votingPositionsValues(1)[1] == 70000000000000000000
-	assert arena.pendingVotesEpoch(1) == 1
+	assert arena.pendingVotesEpoch(1) == 2
 	assert arena.pendingVotes(1) == 52000000000000000000 # pending votes adds correct
 	assert arena.rewardsForEpoch(1,1)[1] == 39000000000000000000 # current epoch
 	assert arena.rewardsForEpoch(1,2)[1] == 52000000000000000000 # next epoch
