@@ -396,7 +396,7 @@ contract NftBattleArena
 		{
 			epoch += 1;
 			pendingVotes[numberOfVotingPositions] = votes;
-			pendingVotesEpoch[numberOfVotingPositions] = currentEpoch;
+			pendingVotesEpoch[numberOfVotingPositions] = epoch;
 		}
 		else
 		{
@@ -538,7 +538,7 @@ contract NftBattleArena
 		{
 			epoch += 1;
 			pendingVotes[votingPositionId] += votes;
-			pendingVotesEpoch[votingPositionId] = currentEpoch;
+			pendingVotesEpoch[votingPositionId] = epoch;
 			pendingYTokens[votingPositionId] += _yTokens;
 		}
 		else
@@ -884,7 +884,7 @@ contract NftBattleArena
 		uint256 votes = votingPosition.votes;
 		for (uint256 i = votingPosition.lastRewardedEpoch; i < endEpoch; ++i)
 		{
-			if (i == pendingVotesEpoch + 1 && pendingVotes > 0)
+			if (i == pendingVotesEpoch && pendingVotes > 0)
 			{
 				votes += pendingVotes;
 			}
@@ -1152,7 +1152,7 @@ contract NftBattleArena
 
 		position.lastRewardedEpoch = currentEpoch;
 
-		if (pendingVotesEpoch[votingPositionId] == 0 || pendingVotesEpoch[votingPositionId] == currentEpoch) // If already updated in this epoch - skip.
+		if (pendingVotesEpoch[votingPositionId] == 0 || pendingVotesEpoch[votingPositionId] == currentEpoch + 1) // If already updated in this epoch - skip.
 			return;
 
 		uint256 votes = pendingVotes[votingPositionId];

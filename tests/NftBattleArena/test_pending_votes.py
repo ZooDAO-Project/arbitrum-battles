@@ -107,7 +107,7 @@ def test_updateVotingPosition_and_pendingVotes_works_correct(accounts, tokens, b
 	assert arena.rewardsForEpoch(1, 2)[1] == 390000000000000000000
 	assert arena.rewardsForEpoch(2, 2)[1] == 130000000000000000000
 
-	assert arena.pendingVotesEpoch(1) == 1
+	assert arena.pendingVotesEpoch(1) == 2
 	assert arena.pendingVotes(1) == 130000000000000000000
 
 	assert arena.votingPositionsValues(1)[1] == 300000000000000000000

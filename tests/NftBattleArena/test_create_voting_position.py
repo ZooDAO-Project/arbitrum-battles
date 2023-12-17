@@ -221,7 +221,7 @@ def test_numberOfNftsWithNonZeroVotesPending_case_2(accounts, tokens, battles):
 	voting.createNewVotingPosition(2, additionalDai, True, _from(accounts[2]))
 
 	assert arena.votingPositionsValues(1)[1] == additionalDai
-	assert arena.pendingVotesEpoch(1) == 1
+	assert arena.pendingVotesEpoch(1) == 2
 	assert arena.pendingVotes(1) == 26000000000000000000
 	assert arena.rewardsForEpoch(1,1)[1] == 0 # current epoch
 	assert arena.rewardsForEpoch(1,2)[1] == 26000000000000000000 # next epoch
@@ -363,7 +363,7 @@ def test_new_mappings_and_values(accounts, fourth_stage):
 	assert votingValues["startEpoch"] == arena.currentEpoch() + 1
 	assert votingValues["lastRewardedEpoch"] == arena.currentEpoch() + 1
 
-	assert arena.pendingVotesEpoch(11) == arena.currentEpoch()
+	assert arena.pendingVotesEpoch(11) == arena.currentEpoch() + 1
 	assert arena.pendingVotes(11) == daiVoted * 1.3
 
 
