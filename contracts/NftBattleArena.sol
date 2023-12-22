@@ -1212,13 +1212,15 @@ contract NftBattleArena
 
 		if (lastEpoch > endEpochOfIncentiveRewards)
 			lastEpoch = endEpochOfIncentiveRewards;
-		if (pendingVotesEpoch[votingPositionId] != 0 && lastEpoch > pendingVotesEpoch[votingPositionId])
-			lastEpoch = pendingVotesEpoch[votingPositionId];
 
+		uint256 votes = votingPosition.votes;
 		for (uint256 i = votingPosition.lastEpochOfIncentiveReward; i < lastEpoch; ++i)
 		{
+			if (i == pendingVotesEpoch[votingPositionId])
+				votes += pendingVotes[votingPositionId];
+
 			if (poolWeight[address(0)][i] != 0 && rewardsForEpoch[stakingPositionId][i].isWinnerChose) // Check that collection has non-zero weight in veZoo and nft played in battle.
-				reward += baseVoterReward * votingPosition.votes * poolWeight[collection][i] / (poolWeight[address(0)][i] * playedVotesByEpoch[i]);
+				reward += baseVoterReward * votes * poolWeight[collection][i] / (poolWeight[address(0)][i] * playedVotesByEpoch[i]);
 		}
 
 		votingPosition.lastEpochOfIncentiveReward = lastEpoch;
