@@ -193,8 +193,8 @@ contract NftBattleArena
 	// epoch number => timestamp of epoch start
 	mapping (uint256 => uint256) public epochsStarts;
 
-	// epoch number => votes from stablecoins played in this epoch
-	mapping (uint256 => uint256) public playedVotesByEpoch;
+	// epoch collection => epoch number => votes from collection played in this epoch.
+	mapping (address => mapping (uint256 => uint256)) public playedVotes;
 
 	// id voting position => pendingVotes
 	mapping (uint256 => uint256) public pendingVotes;      // Votes amount for next epoch.
@@ -1035,11 +1035,16 @@ contract NftBattleArena
 		uint256 randomNumber = zooFunctions.getRandomResult();
 		uint256 votes1 = rewardsForEpoch[pair.token1][currentEpoch].votes;
 		uint256 votes2 = rewardsForEpoch[pair.token2][currentEpoch].votes;
-		playedVotesByEpoch[currentEpoch] += votes1 + votes2;
+
+		playedVotes[stakingPositionsValues[pair.token1].collection][currentEpoch] += votes1;
 
 		if (pair.token2 == 0)
 		{
 			votes2 = votes1;
+		}
+		else
+		{
+			playedVotes[stakingPositionsValues[pair.token2].collection][currentEpoch] += votes2;
 		}
 
 		pair.win = zooFunctions.decideWins(votes1, votes2, randomNumber);                   // Calculates winner and records it, 50/50 result
@@ -1221,7 +1226,7 @@ contract NftBattleArena
 				votes += pendingVotes[votingPositionId];
 
 			if (poolWeight[address(0)][i] != 0 && rewardsForEpoch[stakingPositionId][i].isWinnerChose) // Check that collection has non-zero weight in veZoo and nft played in battle.
-				reward += baseVoterReward * votes * poolWeight[collection][i] / (poolWeight[address(0)][i] * playedVotesByEpoch[i]);
+				reward += baseVoterReward * votes * poolWeight[collection][i] / (poolWeight[address(0)][i] * playedVotes[collection][i]);
 		}
 
 		votingPosition.lastEpochOfIncentiveReward = lastEpoch;
