@@ -307,6 +307,7 @@ contract NftBattleArena
 		position.lastRewardedEpoch = currentEpoch;                                              // Records lastRewardedEpoch
 		position.collection = token;                                                            // Address of nft collection.
 		position.lastEpochOfIncentiveReward = currentEpoch;
+		position.lastUpdateEpoch = currentEpoch;
 
 		numberOfStakedNftsInCollection[currentEpoch][token]++;                                  // Increments amount of nft collection.
 
