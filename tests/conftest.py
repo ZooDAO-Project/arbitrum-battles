@@ -91,7 +91,7 @@ def tokens(accounts, ZooNftFaucet, ZooTokenMock, Dai):
 def listing(accounts, tokens, ListingList):
 	zooToken = tokens[0]
 
-	listingList = ListingList.deploy(zooToken, 4, {"from": accounts[0]})
+	listingList = ListingList.deploy(zooToken, 18, {"from": accounts[0]})
 
 	return (listingList, zooToken)
 

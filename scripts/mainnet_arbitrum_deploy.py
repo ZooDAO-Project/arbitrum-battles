@@ -22,7 +22,7 @@ def main(account = accounts[0], is_need_to_publish = True):
 	functions = BaseZooFunctions.deploy({"from": account}, publish_source=is_need_to_publish)
 
 	governance = ZooGovernance.deploy(functions, account, {"from": account}, publish_source=is_need_to_publish)
-	ve_zoo = ListingList.deploy(lpZooToken, 13, {"from": account}, publish_source=is_need_to_publish)
+	ve_zoo = ListingList.deploy(lpZooToken, 18, {"from": account}, publish_source=is_need_to_publish)
 	
 
 	staking = NftStakingPosition.deploy("zStakerPosition", "ZSP", 

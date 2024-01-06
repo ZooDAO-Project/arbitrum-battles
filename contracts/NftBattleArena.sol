@@ -159,13 +159,13 @@ contract NftBattleArena
 	address public immutable nftStakingPosition; // address of staking positions contract.
 	address public immutable nftVotingPosition;  // address of voting positions contract.
 
-	uint256 public constant baseStakerReward = 133_000 * 10 ** 18 * 15 / 100; // amount of incentives for staker.
-	uint256 public constant baseVoterReward = 133_000 * 10 ** 18 * 85 / 100; // amount of incentives for voter.
+	uint256 public constant baseStakerReward = 140_000 * 10 ** 18 * 15 / 100; // amount of incentives for staker.
+	uint256 public constant baseVoterReward = 140_000 * 10 ** 18 * 85 / 100; // amount of incentives for voter.
 
 	uint256 public zooVoteRateNominator; // amount of votes for 1 LP with zoo.
 	uint256 public zooVoteRateDenominator;
 
-	uint256 public constant endEpochOfIncentiveRewards = 13;
+	uint256 public constant endEpochOfIncentiveRewards = 18;
 
 	mapping (address => mapping (uint256 => uint256)) public poolWeight;
 

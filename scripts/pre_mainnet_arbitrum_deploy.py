@@ -30,7 +30,7 @@ def main(account = accounts[0], is_need_to_publish = True):
 	functions.setStageDuration(4, 60 * 20, {"from": account}) # 5 stage - 20 mins
 	functions.setLeagueRange([3000000000000000000, 5000000000000000000, 15000000000000000000, 30000000000000000000, 50000000000000000000], {"from": account})
 	governance = ZooGovernance.deploy(functions, account, {"from": account}, publish_source=is_need_to_publish)
-	ve_zoo = ListingList.deploy(lpZooToken, 13, {"from": account}, publish_source=is_need_to_publish)
+	ve_zoo = ListingList.deploy(lpZooToken, 18, {"from": account}, publish_source=is_need_to_publish)
 
 	staking = NftStakingPosition.deploy("zStakerPosition", "ZSP", ve_zoo, zooToken, functions, team, {"from": account}, publish_source=is_need_to_publish)
 	voting = NftVotingPosition.deploy("zVoterPosition", "ZVP",

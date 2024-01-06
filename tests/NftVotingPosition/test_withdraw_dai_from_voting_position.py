@@ -70,7 +70,7 @@ def test_multiplie_withdraw(accounts, finished_epoch):
 	assert daiInvested == 90000000000000000000
 	assert arena.votingPositionsValues(1)["endEpoch"] == 0
 	assert arena.votingPositionsValues(1)["zooInvested"] == 90000000000000000000 # zoo withdraws
-	assert zooToken.balanceOf(account0) == 119760210500000000000000000
+	assert zooToken.balanceOf(account0) == 119642610500000000000000000
 
 	assert arena.votingPositionsValues(4)["daiInvested"] == 100000000000000000000 # liquidate doesn't reduce daiInvested
 	assert arena.votingPositionsValues(4)["endEpoch"] == 2
@@ -84,7 +84,7 @@ def test_multiplie_withdraw(accounts, finished_epoch):
 	assert arena.votingPositionsValues(1)["daiInvested"] == 90000000000000000000 # liquidate doesn't reduce daiInvested
 	assert arena.votingPositionsValues(1)["endEpoch"] == 2
 	assert arena.votingPositionsValues(1)["zooInvested"] == 90000000000000000000 # liquidate doesn't reduce zooInvested
-	assert zooToken.balanceOf(account0) == 119760300500000000000000000
+	assert zooToken.balanceOf(account0) == 119642700500000000000000000
 	assert daiToken.balanceOf(account0) - (balanceDai + amount + daiInvested) < 1e18
 
 def test_withdraw_votes_recompute(accounts, finished_epoch):
