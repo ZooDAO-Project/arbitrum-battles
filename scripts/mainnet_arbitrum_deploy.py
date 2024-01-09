@@ -17,7 +17,7 @@ def main(account = accounts[0], is_need_to_publish = True):
 	zoo_vote_rate_nominator = 20 # rate for conversion lp to votes.
 	zoo_vote_rate_denominator = 1
 
-	arenaFee = 250000000000000  # equal to 50 cents at the price of 1 eth at 2000$
+	arenaFee = 227200000000000  # equal to 50 cents at the price of 1 eth at 2200$
 
 	functions = BaseZooFunctions.deploy({"from": account}, publish_source=is_need_to_publish)
 

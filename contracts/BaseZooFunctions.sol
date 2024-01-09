@@ -21,7 +21,7 @@ contract BaseZooFunctions is Ownable
 	uint256 public firstStageDuration = 2 days;    // Duration of first stage(stake).
 	uint256 public secondStageDuration = 5 days;    // Duration of second stage(DAI).
 	uint256 public thirdStageDuration = 1 days;    // Duration of third stage(Pair).
-	uint256 public fourthStageDuration = 12 days;    // Duration fourth stage(ZOO).
+	uint256 public fourthStageDuration = 12 days;    // Duration of fourth stage(ZOO).
 	uint256 public fifthStageDuration = 1 days;    // Duration of fifth stage(Winner).
 
 	uint256 public arenaFee; // equal to 50 cents
